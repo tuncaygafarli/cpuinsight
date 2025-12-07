@@ -1,17 +1,17 @@
 #include <iostream>
 #include <fstream>
 
-#include "loader.h"
+#include "parser.h"
 #include "../cpu/cpu.h"
 
 #define EXPECT(EXPECTED_TOKEN_TYPE)                   \
-    if (_current_token.type != EXPECTED_TOKEN_TYPE)   \
+    if (_current_token->type != EXPECTED_TOKEN_TYPE)   \
     {                                                 \
-        std::cout << "Error : Token did not meet the expected type(Cause : " << _current_token.word << ")" ;               \
+        std::cout << "Error : Token did not meet the expected type(Cause : " << _current_token->word << ")" ;               \
         exit(EXIT_FAILURE);                                       \
     }                                                             \
     
-void loader_t::load_program(const std::string &src, CPU &cpu)  {
+program_t&& parser_t::parse_program(const std::string &src)  {
     std::ifstream file(src);
     if (!file.is_open()) {
         std::cout << "File path " << src << " doesn't exist.\n";
@@ -21,49 +21,63 @@ void loader_t::load_program(const std::string &src, CPU &cpu)  {
     while (std::getline(file, line_raw)) {
         tokenize_line_text(line_raw);
         _current_index = 0;
-        _current_token = _line_tokens[0];
-        load_instruction();
+        _current_token = &_line_tokens[0];
+        parse_instruction();
+    }
+    // resolve the unresolved instructions
+    for (auto& branch_instruction_data : _unresolved_branch_instructions) {
+        if(_label_map.find(branch_instruction_data.second) != _label_map.end()) {
+            branch_instruction_data.first->label_id = _label_map.at(branch_instruction_data.second);
+        }else{
+            std::cout << "Error : Unknown label identifier was found(Cause : " << branch_instruction_data.second << ")";
+        }
+    }
+    for (auto&  jump_instruction_data : _unresolved_jump_instructions) {
+        if(_label_map.find(jump_instruction_data.second) != _label_map.end()) {
+            jump_instruction_data.first->label_id = _label_map.at(jump_instruction_data.second);
+        }else{
+            std::cout << "Error : Unknown label identifier was found(Cause : " << jump_instruction_data.second << ")";
+        }
     }
     file.close();
-    cpu.load_program(std::move(_program));
+    return std::move(_program);
 }
 
-void loader_t::load_instruction() {
-    switch (_current_token.type) {
+void parser_t::parse_instruction() {
+    switch (_current_token->type) {
     case TOKEN_TYPE::LOAD_OPERATION:
     case TOKEN_TYPE::STORE_OPERATION:
-        load_mem_instruction();
+        parse_mem_instruction();
         break;
     case TOKEN_TYPE::ALU_OPERATION_R:
     case TOKEN_TYPE::ALU_OPERATION_I:
-        load_alu_instruction();
+        parse_alu_instruction();
         break;
     case TOKEN_TYPE::BRANCH_OPERATION:
-        load_branch_instruction();
+        parse_branch_instruction();
         break;
     case TOKEN_TYPE::JUMP_OPERATION:
-        load_jump_instruction();
+        parse_jump_instruction();
         break;
     case TOKEN_TYPE::LOAD_UPPER:
-        load_load_upperimm_instruction();
-        break;
     case TOKEN_TYPE::AUIPC:
-        load_auipc_instruction();
+        parse_upperimm_instruction();
         break;
     case TOKEN_TYPE::LABEL:
-        load_label();
+        parse_label();
+        break;
     default:
         break;
     }
 }
 
 // @call : current token is load or memory instruction
-void loader_t::load_mem_instruction() {
-    token_t tmp = _current_token;
+void parser_t::parse_mem_instruction() {
+    token_t tmp = *_current_token;
     advance();
     // we should be register token
     EXPECT(TOKEN_TYPE::REGISTER);
-    reg_id_t dest_reg_id = lookup_t::reg_id(_current_token.word);
+    reg_id_t dest_reg_id = lookup_t::reg_id(_current_token->word);
     advance();
     // we should be comma
     EXPECT(TOKEN_TYPE::COMMA);
@@ -72,7 +86,7 @@ void loader_t::load_mem_instruction() {
 
     // we should be imm
     EXPECT(TOKEN_TYPE::IMMEDIATE);
-    offset_t offset = std::stoi(_current_token.word);
+    offset_t offset = std::stoi(_current_token->word);
 
     advance();
     // we should be left paranthesis
@@ -81,7 +95,7 @@ void loader_t::load_mem_instruction() {
     advance();
     // we should be register
     EXPECT(TOKEN_TYPE::REGISTER);
-    reg_id_t src_reg_id = lookup_t::reg_id(_current_token.word);
+    reg_id_t src_reg_id = lookup_t::reg_id(_current_token->word);
 
     if(tmp.type == TOKEN_TYPE::LOAD_OPERATION) {
         load_instruction_t::LOAD_INSTRUCTION_TYPE type = lookup_t::load_type(tmp.word);
@@ -100,21 +114,23 @@ void loader_t::load_mem_instruction() {
             src_reg_id
         ));
     }
+    advance();
+    EXPECT(TOKEN_TYPE::RPAREN);
 }
 
 // @call : current token is alu operation
-void loader_t::load_alu_instruction() {
-    token_t tmp = _current_token;
+void parser_t::parse_alu_instruction() {
+    token_t tmp = *_current_token;
     bool is_imm = false;
     alu_instruction_t::ALU_INSTRUCTION_TYPE type;
     advance();
     EXPECT(TOKEN_TYPE::REGISTER);
-    reg_id_t dest_reg_id = lookup_t::reg_id(_current_token.word);
+    reg_id_t dest_reg_id = lookup_t::reg_id(_current_token->word);
     advance();
     EXPECT(TOKEN_TYPE::COMMA);
     advance();
     EXPECT(TOKEN_TYPE::REGISTER);
-    reg_id_t src1_reg_id = lookup_t::reg_id(_current_token.word);
+    reg_id_t src1_reg_id = lookup_t::reg_id(_current_token->word);
     advance();
     EXPECT(TOKEN_TYPE::COMMA);
     advance();
@@ -124,11 +140,11 @@ void loader_t::load_alu_instruction() {
         type = lookup_t::alui_type(tmp.word);
         EXPECT(TOKEN_TYPE::IMMEDIATE);
         is_imm = true;
-        src2_val = std::stoi(_current_token.word);
+        src2_val = std::stoi(_current_token->word);
     } else if(lookup_t::alur_type(tmp.word) != alu_instruction_t::ALU_INSTRUCTION_TYPE::UNKNOWN) {
         type = lookup_t::alur_type(tmp.word);
         EXPECT(TOKEN_TYPE::REGISTER);
-        src2_val = lookup_t::reg_id(_current_token.word);
+        src2_val = lookup_t::reg_id(_current_token->word);
     }
     advance();
     _program.emplace_back(
@@ -143,43 +159,135 @@ void loader_t::load_alu_instruction() {
 }
 
 // @call : current token is branch instruction
-void loader_t::load_branch_instruction() {
+void parser_t::parse_branch_instruction() {
+    branch_instruction_t::BRANCH_INSTRUCTION_TYPE type = lookup_t::branch_type(_current_token->word);
+    advance();
+    EXPECT(TOKEN_TYPE::REGISTER);
+    reg_id_t src1_id = lookup_t::reg_id(_current_token->word);
+    advance();
+    EXPECT(TOKEN_TYPE::COMMA);
+    advance();
+    EXPECT(TOKEN_TYPE::REGISTER);
+    reg_id_t src2_id = lookup_t::reg_id(_current_token->word);
+    advance();
+    EXPECT(TOKEN_TYPE::COMMA);
+    advance();
+    EXPECT(TOKEN_TYPE::IDENTIFIER);
+
+    label_id_t label_id = forward_label;
+    if(_label_map.find(_current_token->word) != _label_map.end()) {
+        label_id = _label_map.at(_current_token->word);
+    }
+    auto branch_instruction = std::make_unique<branch_instruction_t>(
+            type,
+            src1_id,
+            src2_id,
+            label_id
+    );
+    auto branch_instruction_ptr = branch_instruction.get();
+    _program.push_back(std::move(branch_instruction));
+    if(label_id == forward_label) {
+        _unresolved_branch_instructions.emplace_back(branch_instruction_ptr,_current_token->word);
+    }
+}
+// @call : current token is jump instruction
+void parser_t::parse_jump_instruction() {
+    label_id_t label_id = forward_label;
+    jump_instruction_t::JUMP_INSTRUCTION_TYPE type = lookup_t::jump_type(_current_token->word);
+    advance();
+    EXPECT(TOKEN_TYPE::REGISTER);
+    reg_id_t dest_reg = lookup_t::reg_id(_current_token->word);
+    reg_id_t src1 = invalid_reg_id;
+    advance();
+    EXPECT(TOKEN_TYPE::COMMA);
+    advance();
+    if(type == jump_instruction_t::JUMP_INSTRUCTION_TYPE::JAL) {
+        EXPECT(TOKEN_TYPE::IDENTIFIER);
+        if(_label_map.find(_current_token->word) != _label_map.end()) {
+            label_id = _label_map.at(_current_token->word);
+        }
+        // src1 and imm fields can be garbage values in this case
+        auto jump_instruction = std::make_unique<jump_instruction_t>(
+            type,
+            dest_reg,
+            src1,
+            label_id,
+            0
+        );
+        auto jump_instruction_ptr = jump_instruction.get();
+        _program.push_back(
+            std::move(jump_instruction)
+        );
+        // we werent able to find the label maybe we will next time
+        if(label_id == forward_label)
+            _unresolved_jump_instructions.emplace_back(jump_instruction_ptr,_current_token->word);
+        return;
+    }
+    EXPECT(TOKEN_TYPE::REGISTER);
+    src1 = lookup_t::reg_id(_current_token->word);
+    advance();
+    EXPECT(TOKEN_TYPE::COMMA);
+    advance();
+    EXPECT(TOKEN_TYPE::IMMEDIATE);
+    int64_t imm = std::stoi(_current_token->word);
+    // here we dont care about the label_id field
+    _program.emplace_back(
+        std::make_unique<jump_instruction_t>(
+            type,
+            dest_reg,
+            src1,
+            label_id,
+            imm
+    ));
 }
 
-void loader_t::load_jump_instruction() {
-
-}
-
-void loader_t::load_load_upperimm_instruction() {
-
-}
-
-void loader_t::load_auipc_instruction() {
-
+// @call : current token is lui or auipc
+void parser_t::parse_upperimm_instruction() {
+    token_t tmp = *_current_token;
+    advance();
+    EXPECT(TOKEN_TYPE::REGISTER);
+    reg_id_t dest_reg = lookup_t::reg_id(_current_token->word);
+    advance();
+    EXPECT(TOKEN_TYPE::COMMA);
+    advance();
+    EXPECT(TOKEN_TYPE::IMMEDIATE);
+    int64_t imm = std::stoi(_current_token->word);
+    if(tmp.word == "lui")
+        _program.emplace_back(std::make_unique<load_upper_imm_instruction_t>(
+            dest_reg,
+            imm
+        )
+        );
+    else if(tmp.word == "auipc")
+        _program.emplace_back(std::make_unique<auipc_instruction_t>(
+            dest_reg,
+            imm
+        )
+        );
 }
 
 // @call : current token is label
-void loader_t::load_label() {
+void parser_t::parse_label() {
     label_id_t unique_id = unique_label_id();
     std::unique_ptr<label_instruction_t> label_instr = std::make_unique<label_instruction_t>(unique_id);
     // insert new entry to the label map
-    _label_map.emplace(_current_token.word, unique_id);
+    _label_map.emplace(_current_token->word, unique_id);
     _program.push_back(std::move(label_instr));
     advance();
 }
-label_id_t loader_t::unique_label_id() {
-    static label_id_t unique_id = 0;
+label_id_t parser_t::unique_label_id() {
+    static label_id_t unique_id = 2;
     return unique_id++;
 }
-void loader_t::advance() {
+void parser_t::advance() {
 
-    if (_current_token.type != TOKEN_TYPE::NEW_LINE) {
+    if (_current_token->type != TOKEN_TYPE::NEW_LINE) {
 		_current_index++;
-		_current_token = _line_tokens[_current_index];
+		_current_token = &_line_tokens[_current_index];
 	}
 }
 
-void loader_t::tokenize_line_text(const std::string& line_raw) {
+void parser_t::tokenize_line_text(const std::string& line_raw) {
 
     _line_tokens.clear();
     size_t comment_pos = line_raw.find('#');
@@ -243,7 +351,9 @@ void loader_t::tokenize_line_text(const std::string& line_raw) {
             _line_tokens.emplace_back(token, TOKEN_TYPE::LOAD_UPPER);
         } else if(token == "auipc") {
             _line_tokens.emplace_back(token, TOKEN_TYPE::AUIPC);
-        } else if(lookup_t::is_imm(token)) {
+        } else if (lookup_t::reg_id(token) != invalid_reg_id) {
+            _line_tokens.emplace_back(token, TOKEN_TYPE::REGISTER);
+        }else if (lookup_t::is_imm(token)) {
             _line_tokens.emplace_back(token, TOKEN_TYPE::IMMEDIATE);
         }
         else {

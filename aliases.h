@@ -5,6 +5,9 @@
 #include <vector>
 #include <memory>
 
+auto constexpr no_label = 0;
+auto constexpr forward_label = 1;
+auto constexpr invalid_reg_id = 255;
 union data_t {
 	uint64_t _unsigned;
 	int64_t  _signed;

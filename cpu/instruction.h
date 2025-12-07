@@ -3,7 +3,7 @@
 class CPU;
 struct instruction_t {
     virtual void execute(CPU &cpu) = 0;
-    virtual label_id_t label() { return 0; }
+    virtual label_id_t label() { return no_label; }
     virtual ~instruction_t() = default;
 };
 struct memory_instruction_t : instruction_t {
@@ -124,7 +124,7 @@ struct branch_instruction_t : instruction_t {
     } type;
     reg_id_t src1_reg;
     reg_id_t src2_reg;
-    label_id_t label;
+    label_id_t label_id;
     branch_instruction_t(
         BRANCH_INSTRUCTION_TYPE type_,
         reg_id_t src1_,
@@ -133,10 +133,11 @@ struct branch_instruction_t : instruction_t {
     ) :
         src1_reg(src1_),
         src2_reg(src2_),
-        label(label_),
+        label_id(label_),
         type(type_)
         {}
     void execute(CPU &cpu) override;
+    label_id_t label() override { return label_id; }
 };
 struct jump_instruction_t : instruction_t {
     enum class JUMP_INSTRUCTION_TYPE
@@ -150,6 +151,7 @@ struct jump_instruction_t : instruction_t {
     reg_id_t src1;// jalr uses this
     int64_t imm;  // jalr uses this
     void execute(CPU &cpu) override;
+    label_id_t label() override { return label_id; }
     jump_instruction_t (
         JUMP_INSTRUCTION_TYPE type_,
         reg_id_t dest_reg_,

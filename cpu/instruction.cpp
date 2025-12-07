@@ -129,7 +129,7 @@ void branch_instruction_t::execute(CPU& cpu) {
     default:
         break;
     }
-    if (should_branch) cpu.jump_to_label(label);
+    if (should_branch) cpu.jump_to_label(label_id);
 }
 
 void jump_instruction_t::execute(CPU& cpu) {
