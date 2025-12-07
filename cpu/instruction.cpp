@@ -68,6 +68,28 @@ void alu_instruction_t::execute(CPU& cpu) {
     case ALU_INSTRUCTION_TYPE::SUB:
         result._signed = src1_val._signed - src2_val._signed;
         break;
+    case ALU_INSTRUCTION_TYPE::MUL:
+    case ALU_INSTRUCTION_TYPE::MULH:
+        result._signed = src1_val._signed * src2_val._signed;
+        break;
+    case ALU_INSTRUCTION_TYPE::MULHSU:
+        result._signed = src1_val._signed * src2_val._unsigned;
+        break;
+    case ALU_INSTRUCTION_TYPE::MULHU:
+        result._signed = src1_val._unsigned * src2_val._unsigned;
+        break;
+    case ALU_INSTRUCTION_TYPE::DIV:
+        result._signed = src1_val._signed / src2_val._signed;
+        break;
+    case ALU_INSTRUCTION_TYPE::DIVU:
+        result._signed = src1_val._unsigned / src2_val._unsigned;
+        break;
+    case ALU_INSTRUCTION_TYPE::REM:
+        result._signed = src1_val._signed % src2_val._signed;
+        break;
+    case ALU_INSTRUCTION_TYPE::REMU:
+        result._signed = src1_val._unsigned % src2_val._unsigned;
+        break;
     case ALU_INSTRUCTION_TYPE::SLL:
         result._unsigned = src1_val._unsigned << shift_amount;
         break;

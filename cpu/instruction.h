@@ -70,6 +70,14 @@ struct alu_instruction_t : instruction_t {
         SRA,
         OR,
         AND,
+        MUL,
+        MULH,
+        MULHSU,
+        MULHU,
+        DIV,
+        DIVU,
+        REM,
+        REMU,
         UNKNOWN
     };
     union _src2_ {

@@ -140,7 +140,10 @@ void parser_t::parse_alu_instruction() {
         type = lookup_t::alui_type(tmp.word);
         EXPECT(TOKEN_TYPE::IMMEDIATE);
         is_imm = true;
-        src2_val = std::stoi(_current_token->word);
+        if(_current_token->word[0] == '0' && _current_token->word[1] == 'x')
+            src2_val = std::stoi(_current_token->word,nullptr,16);
+        else
+            src2_val = std::stoi(_current_token->word);
     } else if(lookup_t::alur_type(tmp.word) != alu_instruction_t::ALU_INSTRUCTION_TYPE::UNKNOWN) {
         type = lookup_t::alur_type(tmp.word);
         EXPECT(TOKEN_TYPE::REGISTER);
@@ -229,7 +232,11 @@ void parser_t::parse_jump_instruction() {
     EXPECT(TOKEN_TYPE::COMMA);
     advance();
     EXPECT(TOKEN_TYPE::IMMEDIATE);
-    int64_t imm = std::stoi(_current_token->word);
+    int64_t imm;
+    if(_current_token->word[0] == '0' && _current_token->word[1] == 'x')
+        imm = std::stoi(_current_token->word,nullptr,16);
+    else
+        imm= std::stoi(_current_token->word);
     // here we dont care about the label_id field
     _program.emplace_back(
         std::make_unique<jump_instruction_t>(
@@ -251,7 +258,12 @@ void parser_t::parse_upperimm_instruction() {
     EXPECT(TOKEN_TYPE::COMMA);
     advance();
     EXPECT(TOKEN_TYPE::IMMEDIATE);
-    int64_t imm = std::stoi(_current_token->word);
+    int64_t imm;
+    if(_current_token->word[0] == '0' && _current_token->word[1] == 'x')
+
+        imm = std::stoi(_current_token->word,nullptr,16);
+    else
+        imm= std::stoi(_current_token->word);
     if(tmp.word == "lui")
         _program.emplace_back(std::make_unique<load_upper_imm_instruction_t>(
             dest_reg,
@@ -362,4 +374,3 @@ void parser_t::tokenize_line_text(const std::string& line_raw) {
     }
     _line_tokens.emplace_back(std::string(), TOKEN_TYPE::NEW_LINE);
 }
-

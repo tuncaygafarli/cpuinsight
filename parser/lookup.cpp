@@ -56,7 +56,14 @@ lookup_t::_alur_instructions = {
     {"srl", alu_instruction_t::ALU_INSTRUCTION_TYPE::SRL},
     {"sra", alu_instruction_t::ALU_INSTRUCTION_TYPE::SRA},
     {"or",  alu_instruction_t::ALU_INSTRUCTION_TYPE::OR},
-    {"and",alu_instruction_t::ALU_INSTRUCTION_TYPE::AND}
+    {"and",alu_instruction_t::ALU_INSTRUCTION_TYPE::AND},
+    {"mul",alu_instruction_t::ALU_INSTRUCTION_TYPE::MUL},
+    {"mulh",alu_instruction_t::ALU_INSTRUCTION_TYPE::MULH},
+    {"mulhsu",alu_instruction_t::ALU_INSTRUCTION_TYPE::MULHSU},
+    {"div",alu_instruction_t::ALU_INSTRUCTION_TYPE::DIV},
+    {"divu",alu_instruction_t::ALU_INSTRUCTION_TYPE::DIVU},
+    {"rem",alu_instruction_t::ALU_INSTRUCTION_TYPE::REM},
+    {"remu",alu_instruction_t::ALU_INSTRUCTION_TYPE::REMU}
 };
 const std::unordered_map<std::string,branch_instruction_t::BRANCH_INSTRUCTION_TYPE>   
 lookup_t::_branch_instructions = {
