@@ -26,7 +26,7 @@ void CPU::reg_file_commit(const reg_id_t& reg_id, data_t data) {
 void CPU::jump_to_label(label_id_t label_) {
 	size_t program_size = _program.size();
 	for (size_t i = 0; i < program_size; ++i) {
-		if (_program[i]->is_label_instruction() && _program[i]->label() == label_) {
+		if (_program[i]->is_label_instruction() && _program[i]->target_label() == label_) {
 			_pc = static_cast<memory_addr_t>(i);
 			return;
 		}

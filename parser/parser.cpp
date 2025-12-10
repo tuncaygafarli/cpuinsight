@@ -27,14 +27,14 @@ program_t&& parser_t::parse_program(const std::string &src)  {
     // resolve the unresolved instructions
     for (auto& branch_instruction_data : _unresolved_branch_instructions) {
         if(_label_map.find(branch_instruction_data.second) != _label_map.end()) {
-            branch_instruction_data.first->_label_id = _label_map.at(branch_instruction_data.second);
+            branch_instruction_data.first->set_target_label(_label_map.at(branch_instruction_data.second));
         }else{
             std::cout << "Error : Unknown label identifier was found(Cause : " << branch_instruction_data.second << ")";
         }
     }
     for (auto&  jump_instruction_data : _unresolved_jump_instructions) {
         if(_label_map.find(jump_instruction_data.second) != _label_map.end()) {
-            jump_instruction_data.first->_label_id = _label_map.at(jump_instruction_data.second);
+            jump_instruction_data.first->set_target_label(_label_map.at(jump_instruction_data.second));
         }else{
             std::cout << "Error : Unknown label identifier was found(Cause : " << jump_instruction_data.second << ")";
         }

@@ -1,14 +1,15 @@
 #include "instruction.h"
 #include "cpu.h"
+#include <iostream>
 void load_instruction_t::execute(CPU& cpu) {
     // get the base register value
-    data_t base_reg_val = cpu.reg_file_read(base_reg);
+    data_t base_reg_val = cpu.reg_file_read(_base_reg);
     // calculate the addr
-    memory_addr_t addr = base_reg_val._unsigned + offset;
+    memory_addr_t addr = base_reg_val._unsigned + _offset;
     // read from addr
     data_t read_val = cpu.d_cache_read(addr); // this is the val that is going to be stored at destination register
 
-    switch(type) {
+    switch(_type) {
         case LOAD_INSTRUCTION_TYPE::LB: 
             read_val._signed &= (0x000000000000000F);
             break;
@@ -24,18 +25,18 @@ void load_instruction_t::execute(CPU& cpu) {
         case LOAD_INSTRUCTION_TYPE::LW:
             break;
     }
-    cpu.reg_file_commit(dest_src_reg, read_val);
+    cpu.reg_file_commit(_dest_src_reg, read_val);
 }
 
 void store_instruction_t::execute(CPU& cpu) {
     // get the source val
-    data_t source_reg_val = cpu.reg_file_read(dest_src_reg);
+    data_t source_reg_val = cpu.reg_file_read(_dest_src_reg);
     // calculate the addr
-    data_t base_reg_val = cpu.reg_file_read(base_reg);
-    memory_addr_t addr = base_reg_val._unsigned + offset;
+    data_t base_reg_val = cpu.reg_file_read(_base_reg);
+    memory_addr_t addr = base_reg_val._unsigned + _offset;
 
     data_t commit_val = source_reg_val;
-    switch(type) {
+    switch(_type) {
         case STORE_INSTRUCTION_TYPE::SB:
             commit_val._unsigned &= (0x000000000000000F);
             break;
@@ -51,17 +52,17 @@ void store_instruction_t::execute(CPU& cpu) {
 }
 
 void alu_instruction_t::execute(CPU& cpu) {
-    data_t src1_val = cpu.reg_file_read(src1_reg);
+    data_t src1_val = cpu.reg_file_read(_src1_reg);
     data_t src2_val = data_t();
-    if(is_imm)
-        src2_val._signed = src2.imm_val;
+    if(_is_imm)
+        src2_val._signed = _src2.imm_val;
     else
-        src2_val = cpu.reg_file_read(src2.src2_reg);
+        src2_val = cpu.reg_file_read(_src2.src2_reg);
     data_t result = data_t();
     
     uint64_t shift_amount = src2_val._unsigned;
 
-    switch (type) {
+    switch (_type) {
     case ALU_INSTRUCTION_TYPE::ADD:
         result._signed = src1_val._signed + src2_val._signed;
         break;
@@ -117,19 +118,19 @@ void alu_instruction_t::execute(CPU& cpu) {
     default:
         break;
     }
-    cpu.reg_file_commit(dest_reg, result);
+    cpu.reg_file_commit(_dest_reg, result);
 }
 
 void load_upper_imm_instruction_t::execute(CPU& cpu) {
-    data_t commit_data = {upimm & 0xFFFFFFFFFF000000};
-    cpu.reg_file_commit(dest_reg,commit_data);
+    data_t commit_data = {_upimm & 0xFFFFFFFFFF000000};
+    cpu.reg_file_commit(_dest_reg,commit_data);
 }
 
 void branch_instruction_t::execute(CPU& cpu) {
-    data_t src1_val = cpu.reg_file_read(src1_reg);
-    data_t src2_val = cpu.reg_file_read(src2_reg);
+    data_t src1_val = cpu.reg_file_read(_src1_reg);
+    data_t src2_val = cpu.reg_file_read(_src2_reg);
     bool should_branch = false;
-    switch (type) {
+    switch (_type) {
     case BRANCH_INSTRUCTION_TYPE::BEQ:
         should_branch = src1_val._signed == src2_val._signed;
         break;
@@ -151,28 +152,29 @@ void branch_instruction_t::execute(CPU& cpu) {
     default:
         break;
     }
-    if (should_branch) cpu.jump_to_label(label_id);
+    //std::cout << _instruction_str << std::endl;
+    if (should_branch) cpu.jump_to_label(_label_id);
 }
 
 void jump_instruction_t::execute(CPU& cpu) {
     memory_addr_t pc_next = cpu.get_pc() + 1;
-    switch (type) {
+    switch (_type) {
     case JUMP_INSTRUCTION_TYPE::JAL:
-        cpu.jump_to_label(label_id);
+        cpu.jump_to_label(_label_id);
         break;
     case JUMP_INSTRUCTION_TYPE::JALR:
-        data_t rs1_val = cpu.reg_file_read(src1);
-        cpu.update_pc(rs1_val._unsigned + imm);
+        data_t rs1_val = cpu.reg_file_read(_src1);
+        cpu.update_pc(rs1_val._unsigned + _imm);
         break;
 
     }
-    cpu.reg_file_commit(dest_reg, { pc_next });
+    cpu.reg_file_commit(_dest_reg, { pc_next });
 }
 
 void auipc_instruction_t::execute(CPU& cpu) {
     int64_t pc_val = cpu.get_pc();
-    int64_t val = upimm & (0xFFFFFFFFFF000000);
+    int64_t val = _upimm & (0xFFFFFFFFFF000000);
     data_t commit_data = data_t();
     commit_data._signed = pc_val + val;
-    cpu.reg_file_commit(dest_reg, commit_data);
+    cpu.reg_file_commit(_dest_reg, commit_data);
 }
