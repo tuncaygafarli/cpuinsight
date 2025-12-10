@@ -27,14 +27,14 @@ program_t&& parser_t::parse_program(const std::string &src)  {
     // resolve the unresolved instructions
     for (auto& branch_instruction_data : _unresolved_branch_instructions) {
         if(_label_map.find(branch_instruction_data.second) != _label_map.end()) {
-            branch_instruction_data.first->label_id = _label_map.at(branch_instruction_data.second);
+            branch_instruction_data.first->_label_id = _label_map.at(branch_instruction_data.second);
         }else{
             std::cout << "Error : Unknown label identifier was found(Cause : " << branch_instruction_data.second << ")";
         }
     }
     for (auto&  jump_instruction_data : _unresolved_jump_instructions) {
         if(_label_map.find(jump_instruction_data.second) != _label_map.end()) {
-            jump_instruction_data.first->label_id = _label_map.at(jump_instruction_data.second);
+            jump_instruction_data.first->_label_id = _label_map.at(jump_instruction_data.second);
         }else{
             std::cout << "Error : Unknown label identifier was found(Cause : " << jump_instruction_data.second << ")";
         }
@@ -176,19 +176,28 @@ void parser_t::parse_branch_instruction() {
     EXPECT(TOKEN_TYPE::COMMA);
     advance();
     EXPECT(TOKEN_TYPE::IDENTIFIER);
-
     label_id_t label_id = forward_label;
     if(_label_map.find(_current_token->word) != _label_map.end()) {
         label_id = _label_map.at(_current_token->word);
     }
+    // build the instruction string
+    std::string instr_str;
+    instr_str.append(_line_tokens[0].word);
+    instr_str.append(" ");
+    for (size_t i = 1; i < _line_tokens.size();++i) {
+        instr_str.append(_line_tokens[i].word);
+    }
     auto branch_instruction = std::make_unique<branch_instruction_t>(
-            type,
-            src1_id,
-            src2_id,
-            label_id
+        type,
+        src1_id,
+        src2_id,
+        label_id,
+        instr_str,
+        unique_branch_id()
     );
     auto branch_instruction_ptr = branch_instruction.get();
     _program.push_back(std::move(branch_instruction));
+    // couldnt find the label identifier save it for later
     if(label_id == forward_label) {
         _unresolved_branch_instructions.emplace_back(branch_instruction_ptr,_current_token->word);
     }
@@ -288,7 +297,11 @@ void parser_t::parse_label() {
     advance();
 }
 label_id_t parser_t::unique_label_id() {
-    static label_id_t unique_id = 2;
+    static label_id_t unique_id = forward_label + 1;
+    return unique_id++;
+}
+branch_instruction_id_t parser_t::unique_branch_id() {
+    static label_id_t unique_id = 0;
     return unique_id++;
 }
 void parser_t::advance() {

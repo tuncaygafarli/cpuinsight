@@ -20,12 +20,13 @@ private:
     void        tokenize_line_text(const std::string &line_raw);
     void        advance();
     label_id_t  unique_label_id();
+    branch_instruction_id_t unique_branch_id();
 private:
-    token_t*                                                              _current_token;
+    token_t*                                                             _current_token;
     size_t                                                               _current_index;
     std::unordered_map<std::string, label_id_t>                          _label_map;
-    std::vector<std::pair<branch_instruction_t*,std::string>>           _unresolved_branch_instructions;// the instructions whose labels are yet to be found
-    std::vector<std::pair<jump_instruction_t*,std::string>>             _unresolved_jump_instructions;// the instructions whose labels are yet to be found
-    std::vector<token_t>                                                _line_tokens;
-    program_t                                                           _program;
+    std::vector<std::pair<branch_instruction_t*,std::string>>            _unresolved_branch_instructions;// the instructions whose labels are yet to be found
+    std::vector<std::pair<jump_instruction_t*,std::string>>              _unresolved_jump_instructions;// the instructions whose labels are yet to be found
+    std::vector<token_t>                                                 _line_tokens;
+    program_t                                                            _program;
 };
