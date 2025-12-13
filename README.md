@@ -1,9 +1,9 @@
 
-## BranchPredict: CPU Simulator & Dynamic Branch Prediction Analysis
+## BranchPredict: CPU Emulator & Dynamic Branch Prediction Analysis
 
 ### 1\. Overview
 
-**BranchPredict** is a dedicated software CPU simulator designed for the quantitative analysis and comparison of dynamic branch prediction algorithms. The tool executes RV32IM programs and generates detailed metrics to evaluate prediction performance across different methodologies.
+**BranchPredict** is a dedicated software CPU emulator designed for the quantitative analysis and comparison of dynamic branch prediction algorithms. The tool executes RV32IM programs and generates detailed metrics to evaluate prediction performance across different methodologies.
 
 The primary objective is to provide a clear, evidence-based comparison between established prediction techniques, including Gshare, GAg, PAg, and a simple baseline predictor.
 
