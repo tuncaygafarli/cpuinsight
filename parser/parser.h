@@ -22,8 +22,8 @@ private:
     label_id_t  unique_label_id();
     branch_instruction_id_t unique_branch_id();
 private:
-    token_t*                                                             _current_token;
-    size_t                                                               _current_index;
+    token_t*                                                             _current_token = nullptr;
+    size_t                                                               _current_index = 0;
     std::unordered_map<std::string, label_id_t>                          _label_map;
     std::vector<std::pair<branch_instruction_t*,std::string>>            _unresolved_branch_instructions;// the instructions whose labels are yet to be found
     std::vector<std::pair<jump_instruction_t*,std::string>>              _unresolved_jump_instructions;// the instructions whose labels are yet to be found

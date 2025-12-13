@@ -176,7 +176,7 @@ void parser_t::parse_branch_instruction() {
     EXPECT(TOKEN_TYPE::COMMA);
     advance();
     EXPECT(TOKEN_TYPE::IDENTIFIER);
-    label_id_t label_id = forward_label;
+    label_id_t label_id = FORWARD_LABEL;
     if(_label_map.find(_current_token->word) != _label_map.end()) {
         label_id = _label_map.at(_current_token->word);
     }
@@ -198,18 +198,18 @@ void parser_t::parse_branch_instruction() {
     auto branch_instruction_ptr = branch_instruction.get();
     _program.push_back(std::move(branch_instruction));
     // couldnt find the label identifier save it for later
-    if(label_id == forward_label) {
+    if(label_id == FORWARD_LABEL) {
         _unresolved_branch_instructions.emplace_back(branch_instruction_ptr,_current_token->word);
     }
 }
 // @call : current token is jump instruction
 void parser_t::parse_jump_instruction() {
-    label_id_t label_id = forward_label;
+    label_id_t label_id = FORWARD_LABEL;
     jump_instruction_t::JUMP_INSTRUCTION_TYPE type = lookup_t::jump_type(_current_token->word);
     advance();
     EXPECT(TOKEN_TYPE::REGISTER);
     reg_id_t dest_reg = lookup_t::reg_id(_current_token->word);
-    reg_id_t src1 = invalid_reg_id;
+    reg_id_t src1 = INVALID_REG_ID;
     advance();
     EXPECT(TOKEN_TYPE::COMMA);
     advance();
@@ -231,7 +231,7 @@ void parser_t::parse_jump_instruction() {
             std::move(jump_instruction)
         );
         // we werent able to find the label maybe we will next time
-        if(label_id == forward_label)
+        if(label_id == FORWARD_LABEL)
             _unresolved_jump_instructions.emplace_back(jump_instruction_ptr,_current_token->word);
         return;
     }
@@ -297,7 +297,7 @@ void parser_t::parse_label() {
     advance();
 }
 label_id_t parser_t::unique_label_id() {
-    static label_id_t unique_id = forward_label + 1;
+    static label_id_t unique_id = FORWARD_LABEL + 1;
     return unique_id++;
 }
 branch_instruction_id_t parser_t::unique_branch_id() {
@@ -376,7 +376,7 @@ void parser_t::tokenize_line_text(const std::string& line_raw) {
             _line_tokens.emplace_back(token, TOKEN_TYPE::LOAD_UPPER);
         } else if(token == "auipc") {
             _line_tokens.emplace_back(token, TOKEN_TYPE::AUIPC);
-        } else if (lookup_t::reg_id(token) != invalid_reg_id) {
+        } else if (lookup_t::reg_id(token) != INVALID_REG_ID) {
             _line_tokens.emplace_back(token, TOKEN_TYPE::REGISTER);
         }else if (lookup_t::is_imm(token)) {
             _line_tokens.emplace_back(token, TOKEN_TYPE::IMMEDIATE);
