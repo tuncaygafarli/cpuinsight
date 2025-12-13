@@ -29,9 +29,9 @@ The primary objective is to provide a clear, evidence-based comparison between e
 
 -----
 
-### 3\. Simulator Usage
+### 3\. Usage
 
-The compiled emulator (`./cpu`) is executed via the command line, requiring an input assembly file and configuration flags for logging and the chosen branch prediction algorithm.
+The compiled program (`./cpu`) is executed via the command line, requiring an input assembly file and configuration flags for logging and the chosen branch prediction algorithm.
 
 #### Syntax
 
