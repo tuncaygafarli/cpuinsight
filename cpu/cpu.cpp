@@ -95,9 +95,10 @@ memory_addr_t CPU::get_pc() const {
 }
 
 data_t CPU::d_cache_read(memory_addr_t addr) {
-	if (_d_cache.find(addr) == _d_cache.end())
+	if (_d_cache.find(addr) == _d_cache.end()) {
 		_cycles += CACHE_MISS_PENALTY;
 		return { 0l };
+	}
 	return _d_cache[addr];
 }
 
