@@ -80,7 +80,8 @@ void alu_instruction_t::execute(CPU& cpu) {
 		result._signed = src1_val._unsigned * src2_val._unsigned;
 		break;
 	case ALU_INSTRUCTION_TYPE::DIV:
-		result._signed = src1_val._signed / src2_val._signed;
+		if (src2_val._signed != 0) 
+			result._signed = src1_val._signed / src2_val._signed;
 		break;
 	case ALU_INSTRUCTION_TYPE::DIVU:
 		result._signed = src1_val._unsigned / src2_val._unsigned;
