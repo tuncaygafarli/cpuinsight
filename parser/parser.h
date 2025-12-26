@@ -10,6 +10,7 @@ struct cli_args_t {
     std::string input_file;
     CPU::PREDICTOR_TYPE predictor;
     std::string log_dest;
+    bool enable_gui;
     bool valid;
 };
 class parser_t {
