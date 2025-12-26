@@ -1,6 +1,8 @@
 #include <SFML/Graphics.hpp>
 
 #include <iostream>
+#include <algorithm>
+#include <cmath>
 #include <vector>
 
 #include "gui_render.h"
@@ -22,17 +24,27 @@ GUIRender::GUIRender(){
 	}
 }
 
-void GUIRender::draw_instructions(sf::RenderWindow& window) {
+void GUIRender::draw_gui(sf::RenderWindow& window) {
 	sf::Vector2f size(window.getSize().x / 2, 50.f);
+	visible_height = static_cast<float>(window.getSize().y);
 
 	float startX = 0.f;
-	float startY = 0.f;
+	float startY = 0.f - scroll_offset;
 	float boxWidth = window.getSize().x / 2;
 	float boxHeight = 40.f;  
 	float spacing = 5.f;
 
+	float total_height = this->instruction_elements.size() * (boxHeight + spacing);
+
+	float max_scroll = std::max(0.f, total_height - visible_height);
+	scroll_offset = std::clamp(scroll_offset, 0.f, max_scroll);
+
 	for (int i = 0; i < this->instruction_elements.size(); i++) {
 		float yPos = startY + i * (boxHeight + spacing);
+
+		if (yPos + boxHeight < 0) continue;
+
+		if (yPos > visible_height) break;
 		
 		// Element box
 		sf::RectangleShape box(size);
@@ -85,5 +97,32 @@ void GUIRender::set_selection(int& selectionIndex) {
 
 	if (selectionIndex >= 0 && selectionIndex < static_cast<int>(this->instruction_elements.size())) {
 		this->instruction_elements[selectionIndex].selected = true;
+	}
+}
+
+void GUIRender::scroll(float amount) {
+	scroll_offset += amount;
+
+	float total_height = instruction_elements.size() * (45.f); // boxHeight + spacing
+	float max_scroll = std::max(0.f, total_height - visible_height);
+
+	scroll_offset = std::clamp(scroll_offset, 0.f, max_scroll);
+}
+
+void GUIRender::ensure_visible(int index) {
+	if (index < 0 || index >= static_cast<int>(instruction_elements.size())) return;
+
+	float boxHeight = 40.f;
+	float spacing = 5.f;
+	float item_height = boxHeight + spacing;
+
+	float item_top = index * item_height;
+	float item_bottom = item_top + item_height;
+
+	if (item_top < scroll_offset) {
+		scroll_offset = item_top;
+	}
+	else if (item_bottom > scroll_offset + visible_height) {
+		scroll_offset = item_bottom - visible_height;
 	}
 }

@@ -64,6 +64,7 @@ int main(int argc, char** argv) {
                     selection_index = 0;
                 }
                 gui_render.set_selection(selection_index);
+                gui_render.ensure_visible(selection_index);
             }
 
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
@@ -74,11 +75,20 @@ int main(int argc, char** argv) {
                 }
 
                 gui_render.set_selection(selection_index);
+                gui_render.ensure_visible(selection_index);
+            }
+
+            if (event.key.code == sf::Keyboard::PageDown) {
+                gui_render.scroll(100.f);  // Scroll down
+            }
+
+            if (event.key.code == sf::Keyboard::PageUp) {
+                gui_render.scroll(-100.f); // Scroll up
             }
         }
 
         window.clear(sf::Color(30, 30, 35, 230));
-        gui_render.draw_instructions(window);
+        gui_render.draw_gui(window);
         window.display();
     }
 
