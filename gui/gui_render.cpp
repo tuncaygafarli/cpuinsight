@@ -38,7 +38,7 @@ void GUIRender::draw_gui(sf::RenderWindow& window, CPU& cpu){
 	sf::Vector2f instructor_size(window.getSize().x / 2, 50.f);
 
 	// Position for register ID panel (right side)
-	float reg_id_panel_x = window.getSize().x / 2 + 20.f;
+	float reg_id_panel_x = window.getSize().x / 2;
 	float reg_id_panel_y = 0.f;
 	float reg_id_panel_width = window.getSize().x / 4;
 	float reg_id_panel_height = 35.f;
@@ -46,8 +46,8 @@ void GUIRender::draw_gui(sf::RenderWindow& window, CPU& cpu){
 	sf::Vector2f reg_id_panel_size(reg_id_panel_width, reg_id_panel_height);
 
 	// Position for register DATA panel (right side)
-	float reg_data_panel_x = 3 * window.getSize().x / 4 + 20.f;
-	float reg_data_panel_y = 50.f;
+	float reg_data_panel_x = 3 * window.getSize().x / 4;
+	float reg_data_panel_y = 0.f;
 	float reg_data_panel_width = window.getSize().x / 4;
 	float reg_data_panel_height = 35.f;
 	float reg_data_panel_spacing = 5.f;
