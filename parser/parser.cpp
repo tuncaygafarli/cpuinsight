@@ -3,7 +3,6 @@
 
 #include "parser.h"
 #include "../cpu/cpu.h"
-#include "../gui/gui_assembly.h"
 
 #define EXPECT(EXPECTED_TOKEN_TYPE)                   \
     if (_current_token->type != EXPECTED_TOKEN_TYPE)   \

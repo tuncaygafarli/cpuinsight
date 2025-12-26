@@ -48,7 +48,8 @@ namespace gui {
         }
         void render_frame(GLFWwindow* window) {
             ImGui::Render();
-            int display_w, display_h;
+            int display_w = 0;
+            int display_h = 0;
             glfwGetFramebufferSize(window, &display_w, &display_h);
             glViewport(0, 0, display_w, display_h);
             glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
