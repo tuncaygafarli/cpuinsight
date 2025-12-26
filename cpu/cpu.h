@@ -13,7 +13,7 @@ public:
 	CPU(PREDICTOR_TYPE type);
 	void 			  		execute();
 	void 			  		reset();
-	bool 			  		halt() const;
+	bool 			  		endofprogram() const;
 	const cpu_reg_file_t& 	get_reg_file() const ;
 	void			  		load_program(cpu_program_t&& program_);
 	void			  		update_bht(branch_instruction_id_t branch_label, bool branch_direction);
@@ -29,6 +29,11 @@ public:
 	void			  		incr_total_branches();
 	void			  		penalty();
 	const memory_addr_t&	get_pc() const;
+	const uint64_t& 		get_cycles() const;
+	const uint64_t&  		get_total_branches() const;
+	const uint64_t&   		get_correct_predictions() const;
+	const cpu_dcache_t& 	get_dcache() const;
+
 private:
 	bool _halt = false;
 	memory_addr_t _pc = 0; // program counter

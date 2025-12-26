@@ -95,6 +95,22 @@ const memory_addr_t& CPU::get_pc() const {
 	return _pc;
 }
 
+const uint64_t& CPU::get_cycles() const {
+	return _cycles;
+}
+
+const uint64_t& CPU::get_total_branches() const {
+	return _total_branches;
+}
+
+const uint64_t& CPU::get_correct_predictions() const {
+	return _correct_predictions;
+}
+
+const cpu_dcache_t& CPU::get_dcache() const {
+	return _d_cache;
+}
+
 const data_t& CPU::d_cache_read(memory_addr_t addr) {
 	if (_d_cache.find(addr) == _d_cache.end()) {
 		_cycles += CACHE_MISS_PENALTY;
@@ -161,9 +177,12 @@ void CPU::reset() {
 	_pc = 0;
 	_d_cache.clear();
 	_reg_file.clear();
+	_total_branches = 0;
+	_cycles = 0;
+	_correct_predictions = 0;
 	_halt = false;
 }
-bool CPU::halt() const {
+bool CPU::endofprogram() const {
 	return _halt;
 }
 
