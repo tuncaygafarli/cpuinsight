@@ -70,6 +70,25 @@ void GUIRender::init(CPU& cpu) {
 	}
 }
 
+void GUIRender::update_registers(CPU& cpu) {
+	const reg_file_t& reg_file = cpu.get_reg_file();
+	reg_elements.clear();
+
+	for (const auto& reg_pair : reg_file) {
+		const reg_id_t& reg_id = reg_pair.first;
+		const data_t& reg_data = reg_pair.second;
+
+		std::string reg_id_str = id_t_to_string(reg_id);
+		std::string reg_data_str = data_t_to_string(reg_data);
+
+		reg_elements.emplace_back(
+			sf::Color(45, 45, 50),
+			reg_id_str,
+			reg_data_str
+		);
+	}
+}
+
 std::string GUIRender::id_t_to_string(uint8_t reg_id) {
 	std::stringstream ss;
 	ss << "0x" << std::hex << std::uppercase

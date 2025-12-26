@@ -73,10 +73,14 @@ int main(int argc, char** argv) {
 
     cpu.load_program(parser.parse_program(input_file, gui_render)); 
     gui_render.init(cpu);
+    bool cpu_halted = false;
 
+    /*
     while (!cpu.halt()) {
         cpu.execute();
     }
+    */
+    
     
     if (log_stream) {
         cpu.log(*log_stream);  
@@ -115,6 +119,19 @@ int main(int argc, char** argv) {
 
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::PageUp)) {
                 gui_render.scroll(-100.f); // Scroll up
+            }
+
+            if (event.key.code == sf::Keyboard::Space) {
+                if (!cpu_halted) {
+                    cpu.execute();
+                    cpu_halted = cpu.halt();
+
+                    gui_render.update_registers(cpu);
+
+                    selection_index = cpu.get_pc();
+                    gui_render.set_selection(selection_index);
+                    gui_render.ensure_visible(selection_index);
+                }
             }
         }
 

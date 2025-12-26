@@ -43,6 +43,8 @@ public :
 	void set_selection(int& selectionIndex);
 	void scroll(float amount);
 	void ensure_visible(int index);
+	void update_registers(CPU& cpu);
+
 	std::string id_t_to_string(uint8_t reg_id);
 	std::string data_t_to_string(const data_t& data);
 
