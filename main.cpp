@@ -37,9 +37,9 @@ int main(int argc, char** argv) {
         gui::renderer::new_frame();
         ImGui::SetNextWindowPos({ 0,0 });
         ImGui::SetNextWindowSize(gui::renderer::get_window_size());
-        if (ImGui::Begin("CPU Visual", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse)) {
+        if (ImGui::Begin("##cpu_visual", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar)) {
 
-            gui::draw(cpu,parse_result.second,follow_pc,action,cpu_speed);
+            gui::draw(cpu, parse_result.second, follow_pc, action, cpu_speed);
             auto now = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double> delta = now - last_time;
             last_time = now;
@@ -65,8 +65,8 @@ int main(int argc, char** argv) {
                 break;
 
             }
-            ImGui::End();
         }
+        ImGui::End();
         gui::renderer::render_frame(window);
     }
 

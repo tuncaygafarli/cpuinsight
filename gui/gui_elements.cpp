@@ -57,7 +57,7 @@ namespace gui {
 						if (is_pc) {
 							ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 100, 100, 255));
 							ImGui::PushStyleColor(ImGuiCol_Header, IM_COL32(255, 100, 100, 60));
-							ImGui::Selectable(assembly[i].c_str(), true,
+							ImGui::Selectable((std::to_string(i + 1) + ". " + assembly[i]).c_str(), true,
 								ImGuiSelectableFlags_SpanAllColumns);
 							ImGui::PopStyleColor(2);
 						}
@@ -140,8 +140,8 @@ namespace gui {
 						else 
 							ImGui::Text(signed_ver ? "%lld" : "%llu", signed_ver ? data._signed : data._unsigned);
 					}
-					ImGui::EndTable();
 				}
+				ImGui::EndTable();
 			}
 			ImGui::EndChild();
 		}
@@ -184,9 +184,8 @@ namespace gui {
 						else 
 							ImGui::Text(signed_ver ? "%lld" : "%llu", signed_ver ? data._signed : data._unsigned);
 				}
-				
-				ImGui::EndTable();
 			}
+			ImGui::EndTable();
 		}
 		ImGui::EndChild();
 	}
