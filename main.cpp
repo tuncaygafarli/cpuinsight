@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
 
     // GUI TEST
     GUIRender gui_render;
-    sf::RenderWindow window(sf::VideoMode(1920, 1080), "BranchPredictor");
+    sf::RenderWindow window(sf::VideoMode(), "BranchPredictor", sf::Style::Fullscreen);
 
     int selection_index = 0;
 
@@ -87,9 +87,12 @@ int main(int argc, char** argv) {
     bool cpu_halted = false;
     bool autorun = false;
 
-    if (log_stream) {
-        cpu.log(*log_stream);
-    }
+    /*
+        if (log_stream) 
+        {
+            cpu.log(*log_stream);
+        }
+    */
 
     sf::Clock autorun_timer;
     float autorun_delay = 0.5f;
