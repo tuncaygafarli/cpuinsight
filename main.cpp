@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
 
     // GUI TEST
     GUIRender gui_render;
-    sf::RenderWindow window(sf::VideoMode(), "BranchPredictor", sf::Style::Fullscreen);
+    sf::RenderWindow window(sf::VideoMode(1920, 1080), "BranchPredictor", sf::Style::Fullscreen);
 
     int selection_index = 0;
 
