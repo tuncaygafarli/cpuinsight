@@ -63,7 +63,7 @@ void GUIRender::init(CPU& cpu) {
 		std::string reg_data_str = data_t_to_string(reg_data);
 
 		reg_elements.emplace_back(
-			sf::Color(35, 35, 40),
+			sf::Color(45, 45, 50),
 			reg_id_str,
 			reg_data_str
 		);
@@ -99,7 +99,7 @@ void GUIRender::draw_instructions(sf::RenderWindow& window) {
 	float instruction_start_x = 0.f;
 	float instruction_start_y = 0.f - scroll_offset;
 	float instruction_box_width = window.getSize().x / 2;
-	float instruction_box_height = 50.f;
+	float instruction_box_height = visible_height / 8;
 
 	float total_height = instruction_elements.size() * instruction_box_height;
 
@@ -258,7 +258,7 @@ void GUIRender::scroll(float amount) {
 void GUIRender::ensure_visible(int index) {
 	if (index < 0 || index >= static_cast<int>(instruction_elements.size())) return;
 
-	float boxHeight = 50.f;
+	float boxHeight = visible_height / 8;
 	float item_height = boxHeight;
 
 	float item_top = index * item_height;
