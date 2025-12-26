@@ -29,8 +29,9 @@ private:
 	sf::Font font;
 	bool font_loaded = false;
 
-	float scroll_offset = 0.f; 
-	float visible_height = 0.f;
+	float register_scroll_offset = 0.f;
+	int visible_registers_count = 12;
+	float register_row_height = 0.f;
 
 public :
 	GUIRender();
@@ -43,9 +44,11 @@ public :
 	void scroll(float amount);
 	void ensure_visible(int index);
 	void update_registers(CPU& cpu);
+	void scroll_registers(float amount);
+	void ensure_register_visible(int reg_index);
 
-	std::string id_t_to_string(uint8_t reg_id);
-	std::string data_t_to_string(const data_t& data);
+	float scroll_offset = 0.f;
+	float visible_height = 0.f;
 
 	std::vector<std::string> instruction_codes;
 	std::vector<instruction_element_t> instruction_elements;

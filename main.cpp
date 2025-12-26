@@ -128,6 +128,14 @@ int main(int argc, char** argv) {
                     gui_render.ensure_visible(selection_index);
                 }
 
+                if (event.key.code == sf::Keyboard::Right) {
+                    gui_render.scroll_registers(gui_render.visible_height);
+                }
+
+                if (event.key.code == sf::Keyboard::Left) {
+                    gui_render.scroll_registers(-gui_render.visible_height);
+                }
+
                 if (event.key.code == sf::Keyboard::Space) {
                     if (!cpu_halted) {
                         cpu.execute();
