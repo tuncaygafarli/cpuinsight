@@ -3,6 +3,7 @@
 
 #include "parser.h"
 #include "../cpu/cpu.h"
+#include "../gui/gui_assembly.h"
 
 #define EXPECT(EXPECTED_TOKEN_TYPE)                   \
     if (_current_token->type != EXPECTED_TOKEN_TYPE)   \
@@ -11,8 +12,10 @@
         exit(EXIT_FAILURE);                                       \
     }                                                             \
 
-cpu_program_t&& parser_t::parse_program(const std::string& src) {
+std::pair<cpu_program_t, std::vector<std::string>>
+parser_t::parse_program(const std::string & src) {
 	std::ifstream file(src);
+	std::vector<std::string> instruction_strs;
 	if (!file.is_open()) {
 		std::cout << "\033[31m" << "Error: \033[0m" << "File path " << src << " doesn't exist.\n";
 		exit(EXIT_FAILURE);
@@ -21,6 +24,7 @@ cpu_program_t&& parser_t::parse_program(const std::string& src) {
 	while (std::getline(file, line_raw)) {
 		_line_number++;
 		tokenize_line_text(line_raw);
+		instruction_strs.push_back(std::move(line_raw));
 		_current_index = 0;
 		_current_token = &_line_tokens[0];
 		parse_instruction();
@@ -43,7 +47,8 @@ cpu_program_t&& parser_t::parse_program(const std::string& src) {
 		}
 	}
 	file.close();
-	return std::move(_program);
+
+	return { std::move(_program),std::move(instruction_strs)};
 }
 
 cli_args_t parser_t::parse_cli(int argc, char** argv) {

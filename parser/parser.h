@@ -15,7 +15,7 @@ struct cli_args_t {
 class parser_t {
 public:
     parser_t() = default;
-    cpu_program_t&&  parse_program(const std::string& src);
+    std::pair<cpu_program_t,std::vector<std::string>>  parse_program(const std::string& src);
     cli_args_t  parse_cli(int argc, char** argv);
 private:
     void        parse_instruction();

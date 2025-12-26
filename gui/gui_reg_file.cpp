@@ -24,6 +24,9 @@ namespace gui {
             ImGuiWindowFlags_NoCollapse
         );
 
+        ImVec2 size = ImGui::GetContentRegionAvail(); 
+        ImGui::BeginChild("ASMView", size, true,
+            ImGuiWindowFlags_HorizontalScrollbar);
         // buttons for value representation
         static bool hex_ver = false;
         static bool signed_ver = false;
@@ -35,46 +38,47 @@ namespace gui {
             hex_ver = !hex_ver;
 
 
-        ImGui::BeginTable("regfile", 3);
+        if (ImGui::BeginTable("regfile", 3)) {
 
-
-        ImGui::TableSetupColumn("Name");
-        ImGui::TableSetupColumn("Number");
-        if(!signed_ver)
-			ImGui::TableSetupColumn("Value(Unsigned)");
-        else
-			ImGui::TableSetupColumn("Value(Signed)");
-        ImGui::TableHeadersRow(); 
-
-        for (reg_id_t i = 0; i < 32;i++) {
-
-
-            auto& data = _reg_file->at(i);
-            std::stringstream representation;
-            if (hex_ver && signed_ver)
-                representation << "0x" << std::hex << data._signed;
-            else if (hex_ver && !signed_ver)
-                representation << "0x" << std::hex << data._unsigned;
-            else if (signed_ver)
-                representation << data._signed;
+            ImGui::TableSetupColumn("Name");
+            ImGui::TableSetupColumn("Number");
+            if(!signed_ver)
+                ImGui::TableSetupColumn("Value(Unsigned)");
             else
-                representation << data._unsigned;
+                ImGui::TableSetupColumn("Value(Signed)");
+            ImGui::TableHeadersRow(); 
 
-            ImGui::TableNextRow();
-            // register name
-            ImGui::TableNextColumn();
-            ImGui::Text(lookup_t::reg_name(i).c_str());
+            for (reg_id_t i = 0; i < 32;i++) {
 
-            // register number
-            ImGui::TableNextColumn();
-            ImGui::Text(std::to_string(i).c_str());
 
-            // register value
-            ImGui::TableNextColumn();
-            ImGui::Text(representation.str().c_str());
+                auto& data = _reg_file->at(i);
+                std::stringstream representation;
+                if (hex_ver && signed_ver)
+                    representation << "0x" << std::hex << data._signed;
+                else if (hex_ver && !signed_ver)
+                    representation << "0x" << std::hex << data._unsigned;
+                else if (signed_ver)
+                    representation << data._signed;
+                else
+                    representation << data._unsigned;
 
+                ImGui::TableNextRow();
+                // register name
+                ImGui::TableNextColumn();
+                ImGui::Text(lookup_t::reg_name(i).c_str());
+
+                // register number
+                ImGui::TableNextColumn();
+                ImGui::Text(std::to_string(i).c_str());
+
+                // register value
+                ImGui::TableNextColumn();
+                ImGui::Text(representation.str().c_str());
+
+            }
         }
         ImGui::EndTable();
+        ImGui::EndChild();
         ImGui::End();
     }
 }

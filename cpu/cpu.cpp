@@ -91,7 +91,7 @@ void CPU::incr_total_branches() {
 void CPU::penalty() {
 	_cycles += BRANCH_MISPREDICTION_PENALTY;
 }
-memory_addr_t CPU::get_pc() const {
+const memory_addr_t& CPU::get_pc() const {
 	return _pc;
 }
 
@@ -161,6 +161,7 @@ void CPU::reset() {
 	_pc = 0;
 	_d_cache.clear();
 	_reg_file.clear();
+	_halt = false;
 }
 bool CPU::halt() const {
 	return _halt;
