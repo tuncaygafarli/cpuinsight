@@ -19,6 +19,8 @@ int main(int argc, char** argv) {
     sf::RenderWindow window(sf::VideoMode(600, 600), "MADE WITH COBALT ENGINE");
 
     instruction_box_t instruction_window;
+    instruction_window.add_instruction("ahh uhh");
+    int selection_index = 0;
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
@@ -57,14 +59,29 @@ int main(int argc, char** argv) {
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+                selection_index++;
+                if (selection_index >= instruction_window.instruction_elements.size()) {
+                    selection_index = 0;
+                }
+                instruction_window.set_selection(selection_index);
+            }
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+                selection_index--;
+
+                if (selection_index < 0) {
+                    selection_index = instruction_window.instruction_elements.size() - 1;
+                }
+
+                instruction_window.set_selection(selection_index);
+            }
         }
 
         window.clear(sf::Color(30, 30, 35, 230));
-        instruction_window.draw_instructions(window, instruction_window.instructions);
+        instruction_window.draw_instructions(window);
         window.display();
     }
-
-
 
     if (input_file.empty()) {
         std::cerr << "Usage: " << argv[0] << " <input.s> [--log cout | --log <filename>] [--gshare | --GAg | --PAg | --simple]\n";
