@@ -4,14 +4,17 @@
 #include "parser.h"
 #include "../cpu/cpu.h"
 
+#include "../gui/gui_render.h"
+
 #define EXPECT(EXPECTED_TOKEN_TYPE)                   \
     if (_current_token->type != EXPECTED_TOKEN_TYPE)   \
     {                                                 \
         std::cout << "\033[31m" << "Error(" << _current_token->row << "," <<  _current_token->column << ")\033[0m: " << "Token " << "'" << _current_token->word << "' did not meet the expected type"  << "\n" ;               \
         exit(EXIT_FAILURE);                                       \
-    }                                                             \
+    }
+\
 
-program_t&& parser_t::parse_program(const std::string& src) {
+program_t&& parser_t::parse_program(const std::string& src, GUIRender& gui_render) {
 	std::ifstream file(src);
 	if (!file.is_open()) {
 		std::cout << "\033[31m" << "Error: \033" << "File path " << src << " doesn't exist.\n";
@@ -19,6 +22,7 @@ program_t&& parser_t::parse_program(const std::string& src) {
 	}
 	std::string line_raw;
 	while (std::getline(file, line_raw)) {
+		gui_render.instruction_codes.emplace_back(line_raw);
 		_line_number++;
 		tokenize_line_text(line_raw);
 		_current_index = 0;

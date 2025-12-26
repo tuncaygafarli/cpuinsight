@@ -5,10 +5,11 @@
 
 #include "token.h"
 #include "lookup.h"
+#include "../gui/gui_render.h"
 class parser_t {
 public:
     parser_t() = default;
-    program_t&&  parse_program(const std::string& src);
+    program_t&&  parse_program(const std::string& src, GUIRender& gui_render);
 private:
     void        parse_instruction();
     void        parse_pseudo_instruction();

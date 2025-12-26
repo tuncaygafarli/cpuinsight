@@ -15,10 +15,9 @@ int main(int argc, char** argv) {
     CPU::PREDICTOR_TYPE predictor_type = CPU::PREDICTOR_TYPE::GSHARE; 
 
     // GUI TEST
-
-    sf::RenderWindow window(sf::VideoMode(1200, 800), "BranchPredictor");
-
     GUIRender gui_render;
+    sf::RenderWindow window(sf::VideoMode(1920, 1080), "BranchPredictor");
+
     int selection_index = 0;
 
     for (int i = 1; i < argc; ++i) {
@@ -51,6 +50,38 @@ int main(int argc, char** argv) {
         }
     }
 
+    if (input_file.empty()) {
+        std::cerr << "Usage: " << argv[0] << " <input.s> [--log cout | --log <filename>] [--gshare | --GAg | --PAg | --simple]\n";
+        return 1;
+    }
+
+    std::ofstream log_file;
+    std::ostream* log_stream = nullptr;  
+	if (log_destination == "cout") {
+        log_stream = &std::cout;
+    } else if (log_destination != "none") {
+        log_file.open(log_destination);
+        if (!log_file.is_open()) {
+            std::cerr << "Error: Could not open log file '" << log_destination << "'\n";
+            return 1;
+        }
+        log_stream = &log_file;
+    } 
+
+    parser_t parser;
+    CPU cpu(predictor_type); 
+
+    cpu.load_program(parser.parse_program(input_file, gui_render)); 
+    gui_render.init(cpu);
+
+    while (!cpu.halt()) {
+        cpu.execute();
+    }
+    
+    if (log_stream) {
+        cpu.log(*log_stream);  
+    }
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -78,52 +109,19 @@ int main(int argc, char** argv) {
                 gui_render.ensure_visible(selection_index);
             }
 
-            if (event.key.code == sf::Keyboard::PageDown) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::PageDown)) {
                 gui_render.scroll(100.f);  // Scroll down
             }
 
-            if (event.key.code == sf::Keyboard::PageUp) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::PageUp)) {
                 gui_render.scroll(-100.f); // Scroll up
             }
         }
 
         window.clear(sf::Color(30, 30, 35, 230));
-        gui_render.draw_gui(window);
+        gui_render.draw_gui(window, cpu);
         window.display();
     }
 
-    if (input_file.empty()) {
-        std::cerr << "Usage: " << argv[0] << " <input.s> [--log cout | --log <filename>] [--gshare | --GAg | --PAg | --simple]\n";
-        return 1;
-    }
-
-    std::ofstream log_file;
-    std::ostream* log_stream = nullptr;  
-	if (log_destination == "cout") {
-        log_stream = &std::cout;
-    } else if (log_destination != "none") {
-        log_file.open(log_destination);
-        if (!log_file.is_open()) {
-            std::cerr << "Error: Could not open log file '" << log_destination << "'\n";
-            return 1;
-        }
-        log_stream = &log_file;
-    } 
-
-
-    parser_t parser;
-    CPU cpu(predictor_type); 
-    
-    cpu.load_program(parser.parse_program(input_file)); 
-
-    while (!cpu.halt()) {
-        cpu.execute();
-    }
-    
-    if (log_stream) {
-        cpu.log(*log_stream);  
-    }
-
-    
     return 0;
 }

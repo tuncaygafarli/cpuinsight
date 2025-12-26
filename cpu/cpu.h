@@ -28,6 +28,8 @@ public:
 	void			incr_total_branches();
 	void			penalty();
 	memory_addr_t	get_pc() const;
+
+	const reg_file_t& get_reg_file() const { return _reg_file; }
 private:
 	bool _halt = false;
 	memory_addr_t _pc = 0; // program counter
