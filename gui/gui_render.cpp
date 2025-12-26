@@ -10,16 +10,7 @@
 
 #include "gui_render.h"
 #include "../cpu/cpu.h"
-
-// helper functions
-
-std::string trim_instruction(const std::string& str) {
-	auto start = str.find_first_not_of(" \t\n\r");
-	if (start == std::string::npos) return "";
-
-	auto end = str.find_last_not_of(" \t\n\r");
-	return str.substr(start, end - start + 1);
-}
+#include "helpers.h"
 
 GUIRender::GUIRender(){
 	std::string font_path = "C:\\Users\\Admin\\Downloads\\BigBlueTerminal\\BigBlueTermPlusNerdFontMono-Regular.ttf";
@@ -30,6 +21,7 @@ GUIRender::GUIRender(){
 	}
 }
 
+// external initializer
 void GUIRender::init(CPU& cpu) {
 	const reg_file_t& reg_file = cpu.get_reg_file();
 
@@ -45,8 +37,8 @@ void GUIRender::init(CPU& cpu) {
 		const reg_id_t& reg_id = reg_pair.first;
 		const data_t& reg_data = reg_pair.second;
 
-		std::string reg_id_str = id_t_to_string(reg_id);
-		std::string reg_data_str = data_t_to_string(reg_data);
+		std::string reg_id_str = Helpers::id_t_to_string(reg_id);
+		std::string reg_data_str = Helpers::data_t_to_string(reg_data);
 
 		reg_elements.emplace_back(
 			sf::Color(45, 45, 50),
@@ -56,6 +48,7 @@ void GUIRender::init(CPU& cpu) {
 	}
 }
 
+// updates register elements after every CPU execution because reg_file_t changes
 void GUIRender::update_registers(CPU& cpu) {
 	const reg_file_t& reg_file = cpu.get_reg_file();
 	reg_elements.clear();
@@ -64,8 +57,8 @@ void GUIRender::update_registers(CPU& cpu) {
 		const reg_id_t& reg_id = reg_pair.first;
 		const data_t& reg_data = reg_pair.second;
 
-		std::string reg_id_str = id_t_to_string(reg_id);
-		std::string reg_data_str = data_t_to_string(reg_data);
+		std::string reg_id_str = Helpers::id_t_to_string(reg_id);
+		std::string reg_data_str = Helpers::data_t_to_string(reg_data);
 
 		reg_elements.emplace_back(
 			sf::Color(45, 45, 50),
@@ -75,22 +68,7 @@ void GUIRender::update_registers(CPU& cpu) {
 	}
 }
 
-std::string GUIRender::id_t_to_string(uint8_t reg_id) {
-	std::stringstream ss;
-	ss << "0x" << std::hex << std::uppercase
-		<< std::setw(2) << std::setfill('0')
-		<< static_cast<int>(reg_id);
-	return ss.str();
-}
 
-std::string GUIRender::data_t_to_string(const data_t& data) {
-	std::stringstream ss;
-
-	ss << "0x" << std::hex << std::uppercase
-		<< std::setw(16) << std::setfill('0') << data._unsigned;
-
-	return ss.str();
-}
 
 void GUIRender::draw_gui(sf::RenderWindow& window, CPU& cpu){
 	draw_instructions(window);
@@ -138,7 +116,7 @@ void GUIRender::draw_instructions(sf::RenderWindow& window) {
 		// Instructor text start
 		sf::Text instructor_text;
 		instructor_text.setFont(font);
-		instructor_text.setString(trim_instruction(instruction_elements[i].CODE));
+		instructor_text.setString(Helpers::trim_instruction(instruction_elements[i].CODE));
 		instructor_text.setCharacterSize(24);
 		instructor_text.setPosition(box.getSize().x / 2, box.getSize().y / 2 - instruction_box_height / 2);
 		if (instruction_elements[i].selected) {
