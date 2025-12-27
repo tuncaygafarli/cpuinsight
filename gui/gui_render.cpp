@@ -256,7 +256,7 @@ void GUIRender::draw_reg_file(sf::RenderWindow& window, CPU& cpu) {
 	float reg_id_header_start_x = window.getSize().x / 2;
 	float reg_id_header_start_y = 0.f;
 	float reg_id_header_box_width = window.getSize().x / 4;
-	float reg_id_header_box_height = REG_CONST_HEIGHT;
+	float reg_id_header_box_height = HEADER_HEIGHT;
 	sf::Vector2f reg_id_header_size(reg_id_header_box_width, reg_id_header_box_height);
 
 	// Header for reg id box
@@ -288,7 +288,7 @@ void GUIRender::draw_reg_file(sf::RenderWindow& window, CPU& cpu) {
 	float reg_data_header_start_x = 3 * window.getSize().x / 4;
 	float reg_data_header_start_y = 0.f;
 	float reg_data_header_box_width = window.getSize().x / 4;
-	float reg_data_header_box_height = window.getSize().y / 20;
+	float reg_data_header_box_height = HEADER_HEIGHT;
 	sf::Vector2f reg_data_header_size(reg_data_header_box_width, reg_data_header_box_height);
 
 	// Header for reg id box
