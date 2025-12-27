@@ -23,14 +23,10 @@ int main(int argc, char** argv) {
 
     cpu.load_program(std::move(parse_result.first));
 
-    if (cli_info.enable_gui) {
-
+    if (cli_info.enable_gui) 
         run_gui(cpu,parse_result);
-    }
     else {
         while (!cpu.endofprogram()) cpu.execute();
-    }
-    if (!cli_info.enable_gui) {
 		if (cli_info.log_dest == "cout")
 			cpu.log(std::cout);
 		else {
