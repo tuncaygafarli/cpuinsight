@@ -84,6 +84,7 @@ int main(int argc, char** argv) {
 
     cpu.load_program(parser.parse_program(input_file, gui_render));
     gui_render.init(cpu);
+    gui_render.set_mode(GUIRender::InputMode::NAVIGATION);
     bool cpu_halted = cpu.halt();
     bool autorun = false;
 
@@ -102,52 +103,66 @@ int main(int argc, char** argv) {
             if (event.type == sf::Event::Closed)
                 window.close();
 
-            if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::Down) {
-                    selection_index++;
-                    if (selection_index >= gui_render.instruction_elements.size()) {
-                        selection_index = 0;
-                    }
-                    gui_render.set_selection(selection_index);
-                    gui_render.ensure_visible(selection_index);
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
+                if (gui_render.current_mode == GUIRender::InputMode::NAVIGATION) {
+                    gui_render.current_mode = GUIRender::InputMode::TEXT;
+                    gui_render.logger_enabled = true;
                 }
-
-                if (event.key.code == sf::Keyboard::Up) {
-                    selection_index--;
-                    if (selection_index < 0) {
-                        selection_index = gui_render.instruction_elements.size() - 1;
-                    }
-                    gui_render.set_selection(selection_index);
-                    gui_render.ensure_visible(selection_index);
+                else {
+                    gui_render.current_mode = GUIRender::InputMode::NAVIGATION;
+                    gui_render.logger_enabled = false;
                 }
+                continue;
+            }
 
-                if (event.key.code == sf::Keyboard::Right) {
-                    gui_render.scroll_registers(gui_render.visible_height);
-                }
+            if (gui_render.current_mode == GUIRender::InputMode::NAVIGATION) {
+                if (event.type == sf::Event::KeyPressed) {
 
-                if (event.key.code == sf::Keyboard::Left) {
-                    gui_render.scroll_registers(-gui_render.visible_height);
-                }
-
-                if (event.key.code == sf::Keyboard::Space) {
-                    if (!cpu_halted) {
-                        cpu.execute();
-                        cpu_halted = cpu.halt();
-
-                        gui_render.update_registers(cpu);
-
-                        selection_index = cpu.get_pc();
+                    if (event.key.code == sf::Keyboard::Down) {
+                        selection_index++;
+                        if (selection_index >= gui_render.instruction_elements.size()) {
+                            selection_index = 0;
+                        }
                         gui_render.set_selection(selection_index);
                         gui_render.ensure_visible(selection_index);
                     }
-                }
 
-                if (event.key.code == sf::Keyboard::V) {
-                    autorun = !autorun;
-                    accumulator = 0.f;
-                }
+                    if (event.key.code == sf::Keyboard::Up) {
+                        selection_index--;
+                        if (selection_index < 0) {
+                            selection_index = gui_render.instruction_elements.size() - 1;
+                        }
+                        gui_render.set_selection(selection_index);
+                        gui_render.ensure_visible(selection_index);
+                    }
 
-                if (event.key.code == sf::Keyboard::R) {
+                    if (event.key.code == sf::Keyboard::Right) {
+                        gui_render.scroll_registers(gui_render.visible_height);
+                    }
+
+                    if (event.key.code == sf::Keyboard::Left) {
+                        gui_render.scroll_registers(-gui_render.visible_height);
+                    }
+
+                    if (event.key.code == sf::Keyboard::Space) {
+                        if (!cpu_halted) {
+                            cpu.execute();
+                            cpu_halted = cpu.halt();
+
+                            gui_render.update_registers(cpu);
+
+                            selection_index = cpu.get_pc();
+                            gui_render.set_selection(selection_index);
+                            gui_render.ensure_visible(selection_index);
+                        }
+                    }
+
+                    if (event.key.code == sf::Keyboard::V) {
+                        autorun = !autorun;
+                        accumulator = 0.f;
+                    }
+
+                    if (event.key.code == sf::Keyboard::R) {
                         cpu.reset();
                         cpu_halted = cpu.halt();
                         autorun = false;
@@ -156,14 +171,29 @@ int main(int argc, char** argv) {
                         selection_index = cpu.get_pc();
                         gui_render.set_selection(selection_index);
                         gui_render.ensure_visible(selection_index);
+                    }
+
+                    if (event.key.code == sf::Keyboard::LShift) {
+                        autorun_delay += 1.f;
+                    }
+
+                    if (event.key.code == sf::Keyboard::LControl) {
+                        autorun_delay = std::max(0.1f, autorun_delay - 0.1f);
+                    }
+
+                }
+            }
+
+            if (gui_render.current_mode == GUIRender::InputMode::TEXT) {
+                if (event.type == sf::Event::TextEntered)
+                {
+                    gui_render.set_text(event.text.unicode);
                 }
 
-                if (event.key.code == sf::Keyboard::LShift) {
-                    autorun_delay += 1.f;
-                }
-
-                if (event.key.code == sf::Keyboard::LControl) {
-                    autorun_delay = std::max(0.1f, autorun_delay - 0.1f);
+                if (event.type == sf::Event::KeyPressed) {
+                    if (event.key.code == sf::Keyboard::A) {
+                        std::cout << "basim agriyir" << "\n";
+                    }
                 }
             }
         }
