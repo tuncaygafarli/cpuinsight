@@ -42,10 +42,11 @@ public :
 	void add_instruction(const std::string& asm_code);
 	void set_selection(int& selectionIndex);
 	void scroll(float amount);
-	void ensure_visible(int index);
-	void update_registers(CPU& cpu);
 	void scroll_registers(float amount);
+	void ensure_visible(int index);
 	void ensure_register_visible(int reg_index);
+	void update_registers(CPU& cpu);
+
 
 	float scroll_offset = 0.f;
 	float visible_height = 0.f;
