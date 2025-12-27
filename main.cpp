@@ -84,15 +84,8 @@ int main(int argc, char** argv) {
 
     cpu.load_program(parser.parse_program(input_file, gui_render));
     gui_render.init(cpu);
-    bool cpu_halted = false;
+    bool cpu_halted = cpu.halt();
     bool autorun = false;
-
-    /*
-        if (log_stream) 
-        {
-            cpu.log(*log_stream);
-        }
-    */
 
     sf::Clock autorun_timer;
     float autorun_delay = 0.5f;
@@ -149,9 +142,19 @@ int main(int argc, char** argv) {
                     }
                 }
 
-                if (event.key.code == sf::Keyboard::R) {
+                if (event.key.code == sf::Keyboard::V) {
                     autorun = !autorun;
                     accumulator = 0.f;
+                }
+
+                if (event.key.code == sf::Keyboard::R) {
+                        cpu.reset();
+                        cpu.load_program(parser.parse_program(input_file, gui_render));
+
+                        gui_render.update_registers(cpu);
+                        selection_index = cpu.get_pc();
+                        gui_render.set_selection(selection_index);
+                        gui_render.ensure_visible(selection_index);
                 }
 
                 if (event.key.code == sf::Keyboard::LShift) {
