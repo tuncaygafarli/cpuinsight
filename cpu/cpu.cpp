@@ -159,9 +159,13 @@ bool CPU::predict_branch(branch_instruction_id_t branch_label) {
 }
 
 void CPU::reset() {
+	for (auto& [reg_id, reg_data] : _reg_file) {
+		reg_data._unsigned = 0;
+	}
+
 	_pc = 0;
 	_d_cache.clear();
-	_reg_file.clear();
+	_halt = false;
 }
 bool CPU::halt() const {
 	return _halt;
