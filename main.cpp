@@ -149,6 +149,8 @@ int main(int argc, char** argv) {
 
                 if (event.key.code == sf::Keyboard::R) {
                         cpu.reset();
+                        cpu_halted = cpu.halt();
+                        autorun = false;
 
                         gui_render.update_registers(cpu);
                         selection_index = cpu.get_pc();
