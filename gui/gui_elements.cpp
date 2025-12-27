@@ -75,9 +75,8 @@ namespace gui {
 					}
 				}
 
-				ImGui::EndChild();
 			}
-
+			ImGui::EndChild();
 
 		}
 
@@ -101,10 +100,10 @@ namespace gui {
 
 					ImGui::Text("Correct: %u (%.1f%%)", cpu.get_correct_predictions(), accuracy);
 
-					ImGui::EndTable();
 				}
-				ImGui::EndChild();
+				ImGui::EndTable();
 			}
+			ImGui::EndChild();
 		}
 		void draw_register_file(const CPU& cpu, ImVec2 size) {
 			if (ImGui::BeginChild("regchild", size, true)) {

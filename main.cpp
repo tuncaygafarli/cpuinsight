@@ -52,7 +52,7 @@ void run_gui(CPU& cpu,const T& parse_result) {
     bool follow_pc = false;
 	double accumulator = 0.0;
     auto last_time = std::chrono::high_resolution_clock::now();
-    const double MAX_IPS = 60.0; 
+    const double MAX_IPS = 100.0; 
 
 
     while (!glfwWindowShouldClose(window)) {
@@ -88,7 +88,7 @@ void run_gui(CPU& cpu,const T& parse_result) {
 
             }
         }
-        ImGui::End();
+		ImGui::End();
         gui::renderer::render_frame(window);
     }
 
