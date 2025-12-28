@@ -48,6 +48,8 @@ public :
 		TEXT
 	};
 
+	InputMode current_mode = InputMode::NAVIGATION;
+
 	void init(CPU& cpu);
 	void draw_gui(sf::RenderWindow& window, CPU& cpu);
 	void draw_instructions(sf::RenderWindow& window);
@@ -73,27 +75,28 @@ public :
 	void update_instructions(CPU& cpu);
 
 	void run(sf::RenderWindow& window, CPU& cpu, GUICommandParser& gc_parser);
-
 	void send_parser_err(const std::string& message);
-
-	InputMode current_mode = InputMode::NAVIGATION;
 	void set_mode(InputMode mode) { current_mode = mode; }
 
-	// getters and setters
+	// GETTERS AND SETTERS
+
+	// output box
 	bool get_show_output() { return show_output; }
 	void set_show_output(bool output) { show_output = output; }
 
+	// output message
 	std::string get_output() { return output_message; }
 	void set_output(const std::string& msg) { output_message = msg; }
 	void clear_output() { output_message.clear(); }
 	bool has_output() const { return !output_message.empty(); }
 
+	// autorun with accumulator
 	bool get_autorun() { return autorun; }
 	void set_autorun(bool output) { autorun = output; }
-
 	float get_accumulator() { return accumulator; }
 	void set_accumulator(float output) { accumulator = output; }
 
+	// sending error from PARSER API
 	bool get_parser_err() { return parser_err; }
 	void set_parser_err(bool output) { parser_err = output; }
 
