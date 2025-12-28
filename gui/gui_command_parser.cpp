@@ -24,7 +24,7 @@ void GUICommandParser::parse_and_execute(const std::string& command_line) {
 
     if (std::find(commands.begin(), commands.end(), cmd) == commands.end()) {
         std::ostringstream err_oss;
-        err_oss << "Unknown command \'" << cmd << "\'." << "\nPlease run \"help\" to see available command list." << "\n";
+        err_oss << "Unknown command \'" << cmd << "\'." << "\nRun \"help\" to see available command list." << "\n";
         gui_render.output_message = err_oss.str();
     }
 
