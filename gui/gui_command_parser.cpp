@@ -11,9 +11,7 @@
 
 parser_t parser;
 
-GUICommandParser::GUICommandParser(GUIRender& gui_render, CPU& cpu, parser_t& parser) : gui_render(gui_render), cpu(cpu), parser(parser) {
-    std::cout << "All classes initialized!" << std::endl;
-}
+GUICommandParser::GUICommandParser(GUIRender& gui_render, CPU& cpu, parser_t& parser) : gui_render(gui_render), cpu(cpu), parser(parser) {}
 
 void GUICommandParser::parse_and_execute(const std::string& command_line) {
     add_command_history(command_line);
@@ -36,6 +34,7 @@ void GUICommandParser::parse_and_execute(const std::string& command_line) {
         oss << "=== CPUInsight Command List ===" << "\n";
         oss << "help            | Shows this message" << "\n";
         oss << "load [filename] | Loads RISC-V Assembly file" << "\n";
+        oss << "mode            | Sets current predictor mode" << "\n";
         oss << "stats           | Shows statistics for executed instructions" << "\n";
         oss << "keybindings     | Shows current keybinding list" << "\n";
         oss << "run             | Runs the loaded RISC-V Assembly file" << "\n";
@@ -84,36 +83,29 @@ void GUICommandParser::parse_and_execute(const std::string& command_line) {
         }
     }
 
-    if (cmd == "set") {
-        std::string first_argument;
-        iss >> first_argument;
+    if (cmd == "mode") {
+        std::string mode;
+        iss >> mode;
+        std::transform(cmd.begin(), cmd.end(), cmd.begin(), ::tolower);
 
-        std::transform(first_argument.begin(), first_argument.end(), first_argument.begin(), ::tolower);
-
-        if (first_argument == "mode") {
-            std::string mode;
-            iss >> mode;
-            std::transform(first_argument.begin(), first_argument.end(), first_argument.begin(), ::tolower);
-
-            if (mode == "simple") {
-                cpu.set_branch_predictor(CPU::PREDICTOR_TYPE::SIMPLE);
-                gui_render.output_message = "Predictor set to: Simple";
-            }
-            else if (mode == "gag") {
-                cpu.set_branch_predictor(CPU::PREDICTOR_TYPE::GAg);
-                gui_render.output_message = "Predictor set to: GAg";
-            }
-            else if (mode == "pag") {
-                cpu.set_branch_predictor(CPU::PREDICTOR_TYPE::PAg);
-                gui_render.output_message = "Predictor set to: PAg";
-            }
-            else if (mode == "gshare") {
-                cpu.set_branch_predictor(CPU::PREDICTOR_TYPE::GSHARE);
-                gui_render.output_message = "Predictor set to: GShare";
-            }
-            else {
-                gui_render.output_message = "Unknown predictor. Available: simple, gag, pag, gshare";
-            }
+        if (mode == "simple") {
+            cpu.set_branch_predictor(CPU::PREDICTOR_TYPE::SIMPLE);
+            gui_render.output_message = "Predictor set to: Simple";
+        }
+        else if (mode == "gag") {
+            cpu.set_branch_predictor(CPU::PREDICTOR_TYPE::GAg);
+            gui_render.output_message = "Predictor set to: GAg";
+        }
+        else if (mode == "pag") {
+            cpu.set_branch_predictor(CPU::PREDICTOR_TYPE::PAg);
+            gui_render.output_message = "Predictor set to: PAg";
+        }
+        else if (mode == "gshare") {
+            cpu.set_branch_predictor(CPU::PREDICTOR_TYPE::GSHARE);
+            gui_render.output_message = "Predictor set to: GShare";
+        }
+        else {
+            gui_render.output_message = "Unknown predictor. Available: simple, gag, pag, gshare";
         }
     }
 
@@ -146,6 +138,10 @@ void GUICommandParser::parse_and_execute(const std::string& command_line) {
 
    // run command
    if (cmd == "run") {
+       if (gui_render.instruction_elements.size() == 0) {
+           gui_render.output_message = "Couldn't execute the instructions, please load a file first.";
+           return;
+       }
        gui_render.set_autorun(true);
        gui_render.set_accumulator(0.f);
 
