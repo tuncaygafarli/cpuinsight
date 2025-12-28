@@ -29,7 +29,15 @@ public:
 	void			penalty();
 	memory_addr_t	get_pc() const;
 
+	// getters ( implemented by tunjaiii )
 	const reg_file_t& get_reg_file() const { return _reg_file; }
+	const uint64_t& get_correct_predictions() const { return _correct_predictions; }
+	const uint64_t& get_cycles() const { return _cycles; }
+	double get_accuracy() const {
+		if (_total_branches == 0) return 0.0;
+		return static_cast<double>(_correct_predictions) / _total_branches;
+	}
+
 private:
 	bool _halt = false;
 	memory_addr_t _pc = 0; // program counter

@@ -164,7 +164,6 @@ void GUIRender::draw_instructions(sf::RenderWindow& window) {
 			text_color);
 	}
 
-
 	draw_box(window,
 		sf::Vector2f(0.f, 0.f),
 		sf::Vector2f(window.getSize().x / 2, HEADER_HEIGHT),

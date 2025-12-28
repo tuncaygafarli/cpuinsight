@@ -11,8 +11,7 @@
 class GUICommandParser {
 public:
     GUICommandParser(GUIRender& gui_render, CPU& cpu, parser_t& parser);
-    void parse_and_execute(const std::string& command);
-    void parse(const std::string& command_line);
+    void parse_and_execute(const std::string& command_line);
 
 private:
     CPU& cpu;
