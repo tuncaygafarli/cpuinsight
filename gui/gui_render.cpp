@@ -265,7 +265,7 @@ void GUIRender::draw_reg_file(sf::RenderWindow& window, CPU& cpu) {
 
 void GUIRender::draw_prompt(sf::RenderWindow& window, CPU& cpu) {
 	float logger_panel_width = window.getSize().x / 2 - 2.f;
-	float logger_panel_height = 50.f;
+	float logger_panel_height = window.getSize().y / 20;
 	float logger_panel_x = 0.f;
 	float logger_panel_y = window.getSize().y - logger_panel_height;
 
@@ -328,9 +328,9 @@ void GUIRender::set_text(sf::Uint32 unicode) {
 
 void GUIRender::draw_output(sf::RenderWindow& window, CPU& cpu) {
 	float output_width = window.getSize().x / 2 - 2.f;
-	float output_height = 250.f;
+	float output_height = window.getSize().y / 20 * 5;
 	float output_x = 0.f;
-	float output_y = window.getSize().y - output_height - 50.f;
+	float output_y = window.getSize().y - output_height - window.getSize().y / 20;
 
 	draw_box(window,
 		sf::Vector2f(output_x, output_y),
