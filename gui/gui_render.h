@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "../cpu/cpu.h";
-
+class GUICommandParser;
 class GUIRender {
 private:
 	struct instruction_element_t {
@@ -33,6 +33,8 @@ private:
 	int visible_registers_count = 12;
 	float register_row_height = 0.f;
 
+	bool show_output = false;
+
 public :
 	GUIRender();
 
@@ -46,6 +48,7 @@ public :
 	void draw_instructions(sf::RenderWindow& window);
 	void draw_reg_file(sf::RenderWindow& window, CPU& cpu);
 	void draw_prompt(sf::RenderWindow& window, CPU& cpu);
+	void draw_output(sf::RenderWindow& window, CPU& cpu);
 	void draw_box(sf::RenderWindow& window,
 		const sf::Vector2f& position,
 		const sf::Vector2f& size,
@@ -64,6 +67,8 @@ public :
 	void update_registers(CPU& cpu);
 	void update_instructions(CPU& cpu);
 
+	void run(sf::RenderWindow& window, CPU& cpu, GUICommandParser& gc_parser);
+
 
 	InputMode current_mode = InputMode::NAVIGATION;
 	void set_mode(InputMode mode) { current_mode = mode; }
@@ -77,7 +82,18 @@ public :
 	void set_text(sf::Uint32 unicode);
 	bool logger_enabled = false;
 
+	// getters and setters
+	bool get_show_output() { return show_output; }
+	void set_show_output(bool output) { show_output = output; }
+	std::string get_output() { return output_message; }
+	void set_output(const std::string& msg) { output_message = msg; }
+	void clear_output() { output_message.clear(); }
+	bool has_output() const { return !output_message.empty(); }
+
+
 	std::vector<std::string> instruction_codes;
 	std::vector<instruction_element_t> instruction_elements;
 	std::vector<reg_element_t> reg_elements;
+	std::string output_message;
+
 };

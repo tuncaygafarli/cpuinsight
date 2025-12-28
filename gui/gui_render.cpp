@@ -8,6 +8,7 @@
 #include <string>
 
 #include "gui_render.h"
+#include "gui_command_parser.h"
 #include "../cpu/cpu.h"
 #include "helpers.h"
 
@@ -88,6 +89,10 @@ void GUIRender::draw_gui(sf::RenderWindow& window, CPU& cpu) {
 
 	if (logger_enabled) {
 		draw_prompt(window, cpu);
+	}
+
+	if (get_show_output()) {
+		draw_output(window, cpu);
 	}
 }
 
@@ -296,6 +301,39 @@ void GUIRender::set_text(sf::Uint32 unicode) {
 
 }
 
+void GUIRender::draw_output(sf::RenderWindow& window, CPU& cpu) {
+	float output_width = window.getSize().x / 2 - 2.f;
+	float output_height = 200.f;
+	float output_x = 0.f;
+	float output_y = window.getSize().y - output_height - 50.f;
+
+	draw_box(window,
+		sf::Vector2f(output_x, output_y),
+		sf::Vector2f(output_width, output_height),
+		sf::Color(20, 20, 25),
+		"",
+		sf::Color::White,
+		24,
+		true);
+
+	if (!output_message.empty()) {
+		std::stringstream ss(output_message);
+		std::string line;
+		float line_y = output_y + 10;
+
+		while (std::getline(ss, line)) {
+			sf::Text line_text;
+			line_text.setFont(font);
+			line_text.setString(line);
+			line_text.setCharacterSize(22);
+			line_text.setFillColor(sf::Color::White);
+			line_text.setPosition(output_x + 10, line_y);
+			window.draw(line_text);
+			line_y += 25;
+		}
+	}
+}
+
 void GUIRender::add_instruction(const std::string& asm_code) {
 	this->instruction_elements.emplace_back(
 		sf::Color(45, 45, 50),
@@ -377,4 +415,150 @@ void GUIRender::ensure_register_visible(int reg_index) {
 	float total_registers_height = reg_elements.size() * register_row_height;
 	float max_scroll = std::max(0.f, total_registers_height - visible_area_height);
 	register_scroll_offset = std::clamp(register_scroll_offset, 0.f, max_scroll);
+}
+
+// RUN THE GUI HERE
+void GUIRender::run(sf::RenderWindow& window, CPU& cpu, GUICommandParser& gc_parser) {
+	set_mode(GUIRender::InputMode::NAVIGATION);
+	bool cpu_halted = cpu.halt();
+	bool autorun = false;
+
+	sf::Clock autorun_timer;
+	float autorun_delay = 0.5f;
+	int selection_index = 0;
+
+	while (window.isOpen())
+	{
+		float delta_time = autorun_timer.restart().asSeconds();
+		static float accumulator = 0.f;
+
+		sf::Event event;
+
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
+				if (current_mode == GUIRender::InputMode::NAVIGATION) {
+					current_mode = GUIRender::InputMode::TEXT;
+					logger_enabled = true;
+				}
+				else {
+					current_mode = GUIRender::InputMode::NAVIGATION;
+					logger_enabled = false;
+					set_show_output(false);
+				}
+				continue;
+			}
+
+			if (current_mode == GUIRender::InputMode::NAVIGATION) {
+				if (event.type == sf::Event::KeyPressed) {
+
+					if (event.key.code == sf::Keyboard::Down) {
+						selection_index++;
+						if (selection_index >= instruction_elements.size()) {
+							selection_index = 0;
+						}
+						set_selection(selection_index);
+						ensure_visible(selection_index);
+					}
+
+					if (event.key.code == sf::Keyboard::Up) {
+						selection_index--;
+						if (selection_index < 0) {
+							selection_index = instruction_elements.size() - 1;
+						}
+					    set_selection(selection_index);
+						ensure_visible(selection_index);
+					}
+
+					if (event.key.code == sf::Keyboard::Right) {
+						scroll_registers(visible_height);
+					}
+
+					if (event.key.code == sf::Keyboard::Left) {
+						scroll_registers(-visible_height);
+					}
+
+					if (event.key.code == sf::Keyboard::Space) {
+						if (!cpu_halted) {
+							cpu.execute();
+							cpu_halted = cpu.halt();
+
+							update_registers(cpu);
+
+							selection_index = cpu.get_pc();
+							set_selection(selection_index);
+							ensure_visible(selection_index);
+						}
+					}
+
+					if (event.key.code == sf::Keyboard::V) {
+						autorun = !autorun;
+						accumulator = 0.f;
+					}
+
+					if (event.key.code == sf::Keyboard::R) {
+						cpu.reset();
+						cpu_halted = cpu.halt();
+						autorun = false;
+
+						update_registers(cpu);
+						selection_index = cpu.get_pc();
+						set_selection(selection_index);
+						ensure_visible(selection_index);
+					}
+
+					if (event.key.code == sf::Keyboard::LShift) {
+						autorun_delay += 1.f;
+					}
+
+					if (event.key.code == sf::Keyboard::LControl) {
+						autorun_delay = std::max(0.1f, autorun_delay - 0.1f);
+					}
+
+				}
+			}
+
+			if (current_mode == GUIRender::InputMode::TEXT) {
+				if (event.type == sf::Event::TextEntered)
+				{
+					set_text(event.text.unicode);
+				}
+
+				if (event.type == sf::Event::KeyPressed) {
+					if (event.key.code == sf::Keyboard::Enter) {
+						gc_parser.parse_and_execute(logger_text);
+						logger_text.clear();
+						set_show_output(true);
+
+						if (gc_parser.should_exit()) {
+							window.close();
+						}
+					}
+				}
+			}
+		}
+
+		if (autorun && !cpu_halted) {
+			accumulator += delta_time;
+
+			while (accumulator >= autorun_delay && !cpu_halted) {
+				accumulator -= autorun_delay;
+
+				cpu.execute();
+				cpu_halted = cpu.halt();
+
+				update_registers(cpu);
+				selection_index = cpu.get_pc();
+				set_selection(selection_index);
+				ensure_visible(selection_index);
+			}
+		}
+
+		window.clear(sf::Color(30, 30, 35, 230));
+		draw_gui(window, cpu);
+		window.display();
+	}
 }

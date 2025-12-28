@@ -13,9 +13,14 @@ public:
     GUICommandParser(GUIRender& gui_render, CPU& cpu, parser_t& parser);
     void parse_and_execute(const std::string& command_line);
 
+    bool should_exit() const { return exit_requested; }
+
 private:
     CPU& cpu;
     GUIRender& gui_render;
     parser_t& parser;
-    std::vector<std::string> commands = { "load", "run" };
+
+    bool exit_requested = false;
+
+    const std::vector<std::string> commands = { "load", "exit" };
 };
