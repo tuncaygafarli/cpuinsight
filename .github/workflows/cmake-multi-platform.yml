@@ -1,4 +1,4 @@
-name: Fast CMake Build
+name: CI Build
 
 on:
   push:
@@ -11,33 +11,69 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        submodules: recursive
+    - uses: actions/checkout@v4
     
-    - name: Cache SFML
-      uses: actions/cache@v3
-      id: cache-sfml
-      with:
-        path: |
-          ~/.cache/sfml
-          build/_deps
-        key: ${{ runner.os }}-sfml-2.6.1-${{ hashFiles('CMakeLists.txt') }}
-    
-    - name: Install system SFML (FASTEST)
+    - name: Install System SFML (Pre-built)
       run: |
         sudo apt-get update
-        sudo apt-get install -y libsfml-dev  # Use pre-built system package
+        # First, try to install full SFML package
+        sudo apt-get install -y \
+          libsfml-dev \
+          libsfml-graphics2.6 \
+          libsfml-window2.6 \
+          libsfml-system2.6 \
+          libsfml-audio2.6 \
+          libsfml-network2.6
+        
+        # Verify installation
+        ls -la /usr/include/SFML/
+        ls -la /usr/lib/*/cmake/SFML/ 2>/dev/null || true
     
-    - name: Configure CMake
+    - name: Install Build Dependencies
       run: |
+        sudo apt-get install -y \
+          build-essential \
+          cmake \
+          pkg-config \
+          libudev-dev \
+          libx11-dev \
+          libxrandr-dev \
+          libxcursor-dev \
+          libxi-dev \
+          libgl1-mesa-dev \
+          libopenal-dev \
+          libflac-dev \
+          libvorbis-dev \
+          libfreetype6-dev
+    
+    - name: Configure with System SFML
+      run: |
+        # Create a simple CMakeLists to test SFML
+        cat > test_sfml.cpp << 'EOF'
+        #include <SFML/Graphics.hpp>
+        int main() {
+            sf::RenderWindow window(sf::VideoMode(800, 600), "Test");
+            return 0;
+        }
+        EOF
+        
+        # Test compile
+        g++ -o test_sfml test_sfml.cpp -lsfml-graphics -lsfml-window -lsfml-system
+        echo "SFML test compilation successful"
+        
+        # Now configure your project
         cmake -B build \
           -DCMAKE_BUILD_TYPE=Release \
           -DBUILD_TESTS=OFF \
-          # Try to use system SFML first
-          -DSFML_DIR=/usr/lib/cmake/SFML \
+          -DFETCHCONTENT_FULLY_DISCONNECTED=ON \
           -S .
     
-    - name: Build
-      run: cmake --build build --parallel 4  # Use parallel builds!
+    - name: Build Project
+      run: cmake --build build --parallel $(nproc)
+    
+    - name: Verify Output
+      run: |
+        echo "Build contents:"
+        find build -type f -name "CPUINSIGHT*" -o -name "*.exe" 2>/dev/null || true
+        echo "Bin directory:"
+        ls -la build/bin/ 2>/dev/null || true
