@@ -69,7 +69,8 @@ cmake .. -DCMAKE_BUILD_TYPE=Release
 cmake --build . --config Release -j4  # Use 4 cores for faster build
 
 # Run the application
-./bin/CPUINSIGHT
+cd bin/Release
+./CPUINSIGHT
 ```
 ### One-Click Build Scripts
 
@@ -98,7 +99,8 @@ cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 cmake --build . --config Release -j$(nproc)
 echo -e "\nRunning CPUINSIGHT..."
-./bin/CPUINSIGHT
+cd bin
+./CPUINSIGHT
 ```
 
 ## Project Structure
