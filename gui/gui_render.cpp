@@ -16,8 +16,7 @@ constexpr float LOGGER_HEIGHT = 20.f;
 constexpr float MARGIN = 5.f;
 
 GUIRender::GUIRender() {
-	std::string font_path = "C:\\Users\\Admin\\Downloads\\BigBlueTerminal\\BigBlueTermPlusNerdFontMono-Regular.ttf";
-	std::string font_path_test = "C:\\Windows\\Fonts\\BigBlueTermPlusNerdFontMono-Regular.ttf";
+	std::string font_path = "./fonts/BigBlueTermPlusNerdFontMono-Regular.ttf";
 
 	if (!font.loadFromFile(font_path))
 	{

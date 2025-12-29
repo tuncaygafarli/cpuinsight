@@ -3,7 +3,8 @@
 #include <iostream>
 #include <vector>
 
-#include "../cpu/cpu.h";
+#include "../cpu/cpu.h"
+
 class GUICommandParser;
 class GUIRender {
 private:
