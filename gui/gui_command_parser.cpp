@@ -57,13 +57,13 @@ void GUICommandParser::parse_and_execute(const std::string& command_line) {
         oss << "unload          | Unloads current RISC-V Assembly file" << "\n";
         oss << "mode            | Sets current predictor mode" << "\n";
         oss << "stats           | Shows statistics for executed instructions" << "\n";
-        oss << "keybindings     | Shows current keybinding list" << "\n";
         oss << "run             | Runs the loaded RISC-V Assembly file" << "\n";
         oss << "stop            | Stops the current execution" << "\n";
+        oss << "delay           | Sets the autorun delay" << "\n";
     }
     else if (page_num == 2) {
         oss << "=== CPUInsight Command List [2] ===" << "\n";
-        oss << "delay           | Sets the autorun delay" << "\n";
+        oss << "keybindings     | Shows current keybinding list" << "\n";
         oss << "exit            | Terminates the program" << "\n";
     }
     
