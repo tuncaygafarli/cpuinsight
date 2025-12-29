@@ -1,4 +1,3 @@
-
 transcript
 *.exe
 *.obj
@@ -79,6 +78,8 @@ packages/
 *.meta
 
 $tf/
+vendor/*
+build/*
 
 *.bak
 *.orig
