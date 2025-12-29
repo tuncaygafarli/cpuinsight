@@ -104,25 +104,25 @@ echo -e "\nRunning CPUINSIGHT..."
 ## Project Structure
 ```
 cpuinsight/
-├── build/                    # Build directory (generated)
-├── vendor/                  # Dependencies (SFML)
+├── build/                                # Build directory (generated)
+├── vendor/                               # Dependencies (SFML)
 ├── src/
-│   ├── gui/                 # GUI rendering and interface
-│   │   ├── gui_render.cpp   # Main GUI rendering logic
+│   ├── gui/                              # GUI rendering and interface
+│   │   ├── gui_render.cpp                # Main GUI rendering logic
 │   │   ├── gui_render.h
 │   │   └── gui_command_parser.cpp
-│   ├── cpu/                 # CPU simulation core
-│   │   ├── cpu.cpp          # CPU emulation
-│   │   ├── instruction.h    # Instruction definitions
-│   │   └── branchpredictor.cpp  # Branch prediction algorithms
-│   ├── parser/              # Assembly parser
-│   │   ├── parser.cpp       # Assembly parsing
-│   │   └── lookup.cpp       # Instruction lookup tables
-│   └── main.cpp            # Application entry point
-├── fonts/                   # Font assets
-├── asm_tests/              # Assembly test files
-├── CMakeLists.txt          # Build configuration
-└── README.md               # This file
+│   ├── cpu/                              # CPU simulation core
+│   │   ├── cpu.cpp                       # CPU emulation
+│   │   ├── instruction.h                 # Instruction definitions
+│   │   └── branchpredictor.cpp           # Branch prediction algorithms
+│   ├── parser/                           # Assembly parser
+│   │   ├── parser.cpp                    # Assembly parsing
+│   │   └── lookup.cpp                    # Instruction lookup tables
+│   └── main.cpp                          # Application entry point
+├── fonts/                                # Font assets
+├── asm_tests/                            # Assembly test files
+├── CMakeLists.txt                        # Build configuration
+└── README.md                             # This file
 ```
 
 ## Usage
