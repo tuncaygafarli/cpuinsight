@@ -36,7 +36,7 @@ void GUICommandParser::parse_and_execute(const std::string& command_line) {
 
         if(page_num.empty()){
             oss << "=== CPUInsight Command List [1] ===" << "\n";
-            oss << "help            | Shows this message" << "\n";
+            oss << "help [page]     | Shows this message" << "\n";
             oss << "load [filename] | Loads RISC-V Assembly file" << "\n";
             oss << "mode            | Sets current predictor mode" << "\n";
             oss << "stats           | Shows statistics for executed instructions" << "\n";
