@@ -206,7 +206,7 @@ void GUIRender::draw_reg_file(sf::RenderWindow& window, CPU& cpu) {
 	visible_registers_count = static_cast<int>((window.getSize().y - register_row_height) / register_row_height);
 	float REG_CONST_HEIGHT = window.getSize().y / 20;
 
-	// register positions
+	// Register positions
 	float reg_id_panel_x = window.getSize().x / 2;
 	float reg_id_panel_y = REG_CONST_HEIGHT - register_scroll_offset;
 	float reg_id_panel_width = window.getSize().x / 4;
