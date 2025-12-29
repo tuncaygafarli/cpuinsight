@@ -30,16 +30,39 @@ void GUICommandParser::parse_and_execute(const std::string& command_line) {
 
     // help command
     if (cmd == "help") {
+        std::string page_num;
+        iss >> page_num;
         std::ostringstream oss;
-        oss << "=== CPUInsight Command List ===" << "\n";
-        oss << "help            | Shows this message" << "\n";
-        oss << "load [filename] | Loads RISC-V Assembly file" << "\n";
-        oss << "mode            | Sets current predictor mode" << "\n";
-        oss << "stats           | Shows statistics for executed instructions" << "\n";
-        oss << "keybindings     | Shows current keybinding list" << "\n";
-        oss << "run             | Runs the loaded RISC-V Assembly file" << "\n";
-        oss << "stop            | Stops the current execution" << "\n";
-        oss << "exit            | Terminates the program" << "\n";
+
+        if(page_num.empty()){
+            oss << "=== CPUInsight Command List [1] ===" << "\n";
+            oss << "help            | Shows this message" << "\n";
+            oss << "load [filename] | Loads RISC-V Assembly file" << "\n";
+            oss << "mode            | Sets current predictor mode" << "\n";
+            oss << "stats           | Shows statistics for executed instructions" << "\n";
+            oss << "keybindings     | Shows current keybinding list" << "\n";
+            oss << "run             | Runs the loaded RISC-V Assembly file" << "\n";
+            oss << "stop            | Stops the current execution" << "\n";
+            oss << "exit            | Terminates the program" << "\n";
+        }
+
+        else if(page_num == "1"){
+            oss << "=== CPUInsight Command List [1] ===" << "\n";
+            oss << "help [page]     | Shows this message" << "\n";
+            oss << "load [filename] | Loads RISC-V Assembly file" << "\n";
+            oss << "mode            | Sets current predictor mode" << "\n";
+            oss << "stats           | Shows statistics for executed instructions" << "\n";
+            oss << "keybindings     | Shows current keybinding list" << "\n";
+            oss << "run             | Runs the loaded RISC-V Assembly file" << "\n";
+            oss << "stop            | Stops the current execution" << "\n";
+            oss << "dismiss         | Resets current process <<" << "\n";
+        }
+
+        else if(page_num == "2"){
+            oss << "=== CPUInsight Command List [2] ===" << "\n";
+            oss << "exit            | Terminates the program" << "\n";
+        }
+
 
         gui_render.output_message = oss.str();
     }
@@ -129,7 +152,7 @@ void GUICommandParser::parse_and_execute(const std::string& command_line) {
        oss << "ArrowDown | Scrolls down in INSTRUCTION section" << "\n";
        oss << "SpaceBar  | Executes only one instruction" << "\n";
        oss << "V         | Enables / disables automatic execution" << "\n";
-       oss << "R         | Resets the process" << "\n";
+       oss << "R         | Resets current process" << "\n";
        oss << "LShift    | Increases auto CPU execution delay" << "\n";
        oss << "LControl  | Decreases auto CPU execution delay" << "\n";
 
