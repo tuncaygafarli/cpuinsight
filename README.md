@@ -15,7 +15,6 @@ This repository focuses on the **GUI frontend**, enabling interactive inspection
 - **Multiple Branch Predictors** - Support for various prediction algorithms
 - **Instruction Pipeline Display** - Visualize instruction execution flow
 - **Register File Visualization** - Watch register values update in real-time
-- **Assembly Code Editor** - Write and test assembly code directly
 - **Performance Metrics** - Track prediction accuracy and performance
 
 ## Screenshots
