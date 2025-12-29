@@ -19,7 +19,6 @@ quartus/
 *.sln
 *.vcxproj
 *.vcxproj.filters
-*.txt
 
 .vs/
 .vscode/
