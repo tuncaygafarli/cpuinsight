@@ -38,7 +38,7 @@ void GUICommandParser::parse_and_execute(const std::string& command_line) {
             oss << "=== CPUInsight Command List [1] ===" << "\n";
             oss << "help [page]     | Shows this message" << "\n";
             oss << "load [filename] | Loads RISC-V Assembly file" << "\n";
-            oss << "unload          | Resets current process <<" << "\n";
+            oss << "unload          | Unloads current RISC-V Assembly file" << "\n";
             oss << "mode            | Sets current predictor mode" << "\n";
             oss << "stats           | Shows statistics for executed instructions" << "\n";
             oss << "keybindings     | Shows current keybinding list" << "\n";
@@ -50,7 +50,7 @@ void GUICommandParser::parse_and_execute(const std::string& command_line) {
             oss << "=== CPUInsight Command List [1] ===" << "\n";
             oss << "help [page]     | Shows this message" << "\n";
             oss << "load [filename] | Loads RISC-V Assembly file" << "\n";
-            oss << "unload          | Resets current process <<" << "\n";
+            oss << "unload          | Unloads current RISC-V Assembly file" << "\n";
             oss << "mode            | Sets current predictor mode" << "\n";
             oss << "stats           | Shows statistics for executed instructions" << "\n";
             oss << "keybindings     | Shows current keybinding list" << "\n";
