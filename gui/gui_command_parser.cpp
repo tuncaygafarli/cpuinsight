@@ -3,6 +3,8 @@
 #include <sstream>
 #include <algorithm>
 #include <vector>
+#include <charconv>
+#include <array>
 
 #include "gui_command_parser.h"
 #include "gui_render.h"
@@ -130,9 +132,15 @@ void GUICommandParser::parse_and_execute(const std::string& command_line) {
     if(cmd == "delay"){
         float set_delay;
         iss >> set_delay;
+        std::array<char, 32> buffer;
 
         float delay = std::clamp(set_delay, 0.1f, 5.f);
+        auto [ptr, ec] = std::to_chars(buffer.data(), buffer.data() + buffer.size(), 
+                    delay, std::chars_format::fixed, 2);
+        std::string str_delay(buffer.data(), ptr);
+
         gui_render.set_autorun_delay(delay);
+        gui_render.set_output_message("Successfully set delay to " + str_delay + ".");
     }
 
     // setting branch mode here

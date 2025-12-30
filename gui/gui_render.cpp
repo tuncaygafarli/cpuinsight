@@ -696,6 +696,7 @@ void GUIRender::run(sf::RenderWindow& window, CPU& cpu, GUICommandParser& gc_par
 						autorun = false;
 
 						update_registers(cpu);
+						mem_elements.clear();
 						selection_index = cpu.get_pc();
 						set_selection(selection_index);
 						ensure_visible(selection_index);

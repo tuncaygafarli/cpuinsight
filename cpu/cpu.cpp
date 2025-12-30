@@ -136,18 +136,24 @@ CPU::CPU(CPU::PREDICTOR_TYPE type) {
 }
 
 void CPU::execute() {
-	if (_pc >= _program.size() && !_halt) {
-		_halt = true;
-		return;
-	}
-	if (_program[_pc]->is_label_instruction()) {
-		_pc++;
-	}
-	auto old_pc = _pc;
-	_program[_pc]->execute(*this);
-	if (old_pc == _pc)
-		_pc++;
-	_cycles++;
+    if (_pc >= _program.size() && !_halt) {
+        _halt = true;
+        return;
+    }
+    
+    if (_program[_pc]->is_label_instruction()) {
+        _pc++;
+        if (_pc >= _program.size() && !_halt) {
+            _halt = true;
+            return;
+        }
+    }
+    
+    auto old_pc = _pc;
+    _program[_pc]->execute(*this);
+    if (old_pc == _pc)
+        _pc++;
+    _cycles++;
 }
 
 void CPU::update_bht(branch_instruction_id_t branch_label, bool branch_direction) {
