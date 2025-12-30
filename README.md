@@ -4,7 +4,7 @@
 ![SFML](https://img.shields.io/badge/SFML-2.6.1-green.svg)
 ![CMake](https://img.shields.io/badge/CMake-3.16+-yellow.svg)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20|%20Linux%20|%20Mac-lightgrey.svg)
-[![CI Build](https://github.com/tuncaygafarli/cpuinsight/actions/workflows/cmake-multi-platform.yml/badge.svg?event=check_run)](https://github.com/tuncaygafarli/cpuinsight/actions/workflows/cmake-multi-platform.yml)
+[![CI Build](https://github.com/tuncaygafarli/cpuinsight/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/tuncaygafarli/cpuinsight/actions/workflows/cmake-multi-platform.yml)
 
 **CPUINSIGHT** is a graphical user interface built on top of the **CPUINSIGHT CPU** simulation backend, providing real-time visualization of CPU instruction execution and branch prediction behavior.
 
