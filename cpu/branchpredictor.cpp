@@ -13,7 +13,7 @@ void simple_predictor_t::update(branch_instruction_id_t branch_id, bool branch_t
 	}
 }
 
-bool simple_predictor_t::predict(branch_instruction_id_t branch_id) {
+bool simple_predictor_t::predict([[maybe_unused]] branch_instruction_id_t branch_id) {
 	if (_bht.find(branch_id) == _bht.end()) {
 		_bht.emplace(branch_id,0);
 		return false;
@@ -25,7 +25,7 @@ bool simple_predictor_t::predict(branch_instruction_id_t branch_id) {
 	return false;
 }
 
-void GAg_predictor_t::update(branch_instruction_id_t branch_id, bool branch_taken) {
+void GAg_predictor_t::update([[maybe_unused]] branch_instruction_id_t branch_id, bool branch_taken) {
 	branch_history_t branch_history = _pattern_history_table[_branch_shift_register];
     
 	if (branch_taken) {
@@ -46,7 +46,7 @@ void GAg_predictor_t::update(branch_instruction_id_t branch_id, bool branch_take
 	_branch_shift_register &= (1 << SHIFT_REGISTER_SIZE) - 1;
 }
 
-bool GAg_predictor_t::predict(branch_instruction_id_t branch_id) {
+bool GAg_predictor_t::predict([[maybe_unused]] branch_instruction_id_t branch_id) {
 
 	if(_pattern_history_table.find(_branch_shift_register) == _pattern_history_table.end()) {
 		_pattern_history_table.emplace(_branch_shift_register, 2); // start at weakly taken

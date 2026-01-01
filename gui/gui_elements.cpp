@@ -132,7 +132,7 @@ namespace gui {
 					ImGui::TableSetupColumn(signed_ver ? "Value (S)" : "Value (U)");
 					ImGui::TableHeadersRow();
 
-					for (int i = 0; i < 32; i++) {
+					for (uint8_t i = 0; i < 32; i++) {
 						auto& data = cpu.get_reg_file().at(i);
 						ImGui::TableNextRow();
 						ImGui::TableNextColumn();
@@ -153,49 +153,49 @@ namespace gui {
 			ImGui::EndChild();
 		}
 		void draw_dcache(const CPU& cpu, const ImVec2& size) {
-		if (ImGui::BeginChild("##datacache", size, true)) {
+			if (ImGui::BeginChild("##datacache", size, true)) {
 
 
-			static bool signed_ver = false;
-			static bool hex_ver = false;
-			if (signed_ver) {
-				if (ImGui::SmallButton("Switch to Unsigned")) signed_ver = false;
-			} else {
-				if (ImGui::SmallButton("Switch to Signed")) signed_ver = true;
-			}
-
-			ImGui::SameLine();
-
-			if (hex_ver) {
-				if (ImGui::SmallButton("Switch to Decimal")) hex_ver = false;
-			} else {
-				if (ImGui::SmallButton("Switch to Hex")) hex_ver = true;
-			}
-			
-			if (ImGui::BeginTable("dcache", 2, ImGuiTableFlags_ScrollY | ImGuiTableFlags_BordersInnerH)) {
-				
-				ImGui::TableSetupScrollFreeze(0, 1); 
-				ImGui::TableSetupColumn("Address");
-				ImGui::TableSetupColumn("Data");
-				ImGui::TableHeadersRow();
-
-				for (auto& [addr, data] : cpu.get_dcache()) {
-					ImGui::TableNextRow();
-					
-					ImGui::TableNextColumn();
-					ImGui::Text("0x%08X", addr); 
-
-					ImGui::TableNextColumn();
-					if (hex_ver) 
-							ImGui::Text("0x%X", signed_ver ? data._signed : data._unsigned);
-						else 
-							ImGui::Text(signed_ver ? "%lld" : "%llu", signed_ver ? data._signed : data._unsigned);
+				static bool signed_ver = false;
+				static bool hex_ver = false;
+				if (signed_ver) {
+					if (ImGui::SmallButton("Switch to Unsigned")) signed_ver = false;
+				} else {
+					if (ImGui::SmallButton("Switch to Signed")) signed_ver = true;
 				}
+
+				ImGui::SameLine();
+
+				if (hex_ver) {
+					if (ImGui::SmallButton("Switch to Decimal")) hex_ver = false;
+				} else {
+					if (ImGui::SmallButton("Switch to Hex")) hex_ver = true;
+				}
+				
+				if (ImGui::BeginTable("dcache", 2, ImGuiTableFlags_ScrollY | ImGuiTableFlags_BordersInnerH)) {
+					
+					ImGui::TableSetupScrollFreeze(0, 1); 
+					ImGui::TableSetupColumn("Address");
+					ImGui::TableSetupColumn("Data");
+					ImGui::TableHeadersRow();
+
+					for (auto& [addr, data] : cpu.get_dcache()) {
+						ImGui::TableNextRow();
+						
+						ImGui::TableNextColumn();
+						ImGui::Text("0x%08X", addr); 
+
+						ImGui::TableNextColumn();
+						if (hex_ver) 
+								ImGui::Text("0x%X", signed_ver ? data._signed : data._unsigned);
+							else 
+								ImGui::Text(signed_ver ? "%lld" : "%llu", signed_ver ? data._signed : data._unsigned);
+					}
+				}
+				ImGui::EndTable();
 			}
-			ImGui::EndTable();
+			ImGui::EndChild();
 		}
-		ImGui::EndChild();
-	}
 	
 	} // anonymous
 	void draw(const CPU& cpu, const std::vector<std::string>& assembly, bool& follow_pc, CPU_EXECUTION& action, float& speed) {

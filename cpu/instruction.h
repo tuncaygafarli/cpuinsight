@@ -199,7 +199,7 @@ private:
 struct label_instruction_t : instruction_t {
 	label_instruction_t(label_id_t label_) : _label_id(label_) {}
 	label_id_t target_label() override { return _label_id; }
-	void execute(CPU& cpu) override {}
+	[[maybe_unused]] void execute( [[maybe_unused]] CPU& cpu) override {}
 	bool is_label_instruction() override { return true; }
 private:
 	label_id_t _label_id;
