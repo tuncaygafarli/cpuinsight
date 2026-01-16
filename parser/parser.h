@@ -27,7 +27,7 @@ private:
     void        parse_jump_instruction();
     void        parse_upperimm_instruction();
     void        parse_label();
-    void        tokenize_line_text(const std::string &line_raw);
+    std::string tokenize_line_text(const std::string &line_raw);
     void        advance();
     label_id_t  unique_label_id();
     branch_instruction_id_t unique_branch_id();

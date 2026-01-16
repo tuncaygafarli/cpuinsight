@@ -22,8 +22,9 @@ parser_t::parse_program(const std::string & src) {
 	std::string line_raw;
 	while (std::getline(file, line_raw)) {
 		_line_number++;
-		tokenize_line_text(line_raw);
-		instruction_strs.push_back(std::move(line_raw));
+		std::string line_better = tokenize_line_text(line_raw);
+		if(!line_better.empty())
+			instruction_strs.push_back(std::move(line_better));
 		_current_index = 0;
 		_current_token = &_line_tokens[0];
 		parse_instruction();
@@ -366,7 +367,7 @@ void parser_t::advance() {
 	}
 }
 
-void parser_t::tokenize_line_text(const std::string& line_raw) {
+std::string parser_t::tokenize_line_text(const std::string& line_raw) {
 	_line_tokens.clear();
 	_column = 0;
 	size_t comment_pos = line_raw.find('#');
@@ -457,6 +458,10 @@ void parser_t::tokenize_line_text(const std::string& line_raw) {
 	if (_line_tokens[0].word == "jal" && _line_tokens.size() == 3) {
 		_line_tokens[0].type = TOKEN_TYPE::PSUEDO_OPERATION;
 	}
+	if (_line_tokens.size() > 1)
+		return line;
+	else
+		return std::string();
 }
 
 // @call : current token is pseudo instruction
