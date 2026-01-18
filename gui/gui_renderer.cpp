@@ -4,11 +4,11 @@
 namespace gui {
     namespace renderer {
         static GLFWwindow* window = nullptr;
-        void init(const char* window_name, int32_t width, int32_t height) {
+        bool init(const char* window_name, int32_t width, int32_t height) {
 
             if (!glfwInit()) {
                 std::cerr << "Error : Failed to initialize GLFW\n";
-                return;
+                return false;
             }
 
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -19,7 +19,7 @@ namespace gui {
             if (!window) {
                 std::cerr << "Failed to create GLFW window\n";
                 glfwTerminate();
-                return;
+                return false;
             }
             glfwMakeContextCurrent(window);
             glfwSwapInterval(1);
@@ -30,8 +30,16 @@ namespace gui {
 
             ImGui_ImplGlfw_InitForOpenGL(window, true);
             ImGui_ImplOpenGL3_Init("#version 330"); 
+            return true;
         }
-        void cleanup(GLFWwindow* window) {
+
+		bool window_closed() {
+            return glfwWindowShouldClose(window);
+		}
+
+		void cleanup() {
+
+            if (!window) return;
 
             ImGui_ImplOpenGL3_Shutdown();
             ImGui_ImplGlfw_Shutdown();
@@ -46,7 +54,9 @@ namespace gui {
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
         }
-        void render_frame(GLFWwindow* window) {
+        void render_frame() {
+            if (!window)
+                return;
             ImGui::Render();
             int display_w = 0;
             int display_h = 0;

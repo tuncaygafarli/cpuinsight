@@ -28,11 +28,8 @@ namespace gui {
 	template<typename T>
 	void run(CPU& cpu,const T& parse_result) {
 
-		gui::renderer::init("CpuInsight", 800, 600);
-		GLFWwindow* window = gui::renderer::get_window();
-
-		if (!window)
-			return ;
+		if (!gui::renderer::init("CpuInsight", 800, 600))
+			return;
 
 		float cpu_speed = 0;
 		CPU_EXECUTION action = CPU_EXECUTION::STOP;
@@ -42,7 +39,7 @@ namespace gui {
 		const double MAX_IPS = 100.0; 
 
 
-		while (!glfwWindowShouldClose(window)) {
+		while (!gui::renderer::window_closed()) {
 			gui::renderer::new_frame();
 			ImGui::SetNextWindowPos({ 0,0 });
 			ImGui::SetNextWindowSize(gui::renderer::get_window_size());
@@ -81,9 +78,9 @@ namespace gui {
 				}
 			}
 			ImGui::End();
-			gui::renderer::render_frame(window);
+			gui::renderer::render_frame();
 		}
 
-		gui::renderer::cleanup(window);
+		gui::renderer::cleanup();
 	}
 }

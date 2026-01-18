@@ -7,10 +7,10 @@ namespace gui {
 
     namespace renderer {
 
-        void init(const char* window_name, int32_t width, int32_t height); // creates window and imgui context if window creating was succesful
-        GLFWwindow* get_window();
-        void cleanup(GLFWwindow* window);
-        void render_frame(GLFWwindow* window);
+        bool init(const char* window_name, int32_t width, int32_t height); // creates window and imgui context if window creating was succesful
+        bool window_closed();
+        void cleanup();
+        void render_frame();
         void new_frame();
         ImVec2 get_window_size();
     }
